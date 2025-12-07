@@ -1,0 +1,36 @@
+{
+  "heading": "Our Services",
+  "subheading": "Comprehensive digital solutions tailored to your unique business needs",
+  "services": [
+    {
+      "icon": "Globe",
+      "title": "Web Solutions",
+      "description": "Custom websites and web applications built with modern technologies for optimal performance and user experience."
+    },
+    {
+      "icon": "Building2",
+      "title": "Business Digitization",
+      "description": "Transform traditional business processes into efficient digital workflows with automation and integration."
+    },
+    {
+      "icon": "GraduationCap",
+      "title": "Academic Platforms",
+      "description": "Comprehensive digital solutions for educational institutions including management systems and online portals."
+    },
+    {
+      "icon": "Zap",
+      "title": "Rapid Application Development",
+      "description": "Fast-track your business applications using modern development platforms for quicker time-to-market."
+    },
+    {
+      "icon": "Workflow",
+      "title": "Process Automation",
+      "description": "Streamline operations with intelligent automation, reducing manual work and increasing productivity."
+    },
+    {
+      "icon": "Smartphone",
+      "title": "Digital Presence",
+      "description": "Build and optimize your online presence across multiple channels to reach and engage your audience."
+    }
+  ]
+}

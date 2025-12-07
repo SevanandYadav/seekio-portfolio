@@ -2,8 +2,19 @@ import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router";
+import { useState, useEffect } from "react";
 
 export const CTA = () => {
+  const [content, setContent] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/content/cta.json')
+      .then(res => res.json())
+      .then(data => setContent(data));
+  }, []);
+
+  if (!content) return null;
+
   return (
     <section className="py-24 bg-gradient-to-r from-blue-600 to-indigo-600 relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
@@ -23,21 +34,21 @@ export const CTA = () => {
             <Sparkles size={48} className="text-yellow-300" />
           </motion.div>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to Transform Your Business?
+            {content.heading}
           </h2>
           <p className="text-xl text-blue-100 mb-12 max-w-2xl mx-auto">
-            Let's discuss how we can help you achieve your digital transformation goals
+            {content.subheading}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact">
               <Button variant="secondary" size="lg" className="group">
-                Start Your Project
+                {content.primaryCTA}
                 <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <a href="https://wa.me/1234567890">
+            <a href={content.whatsappLink}>
               <Button variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white hover:text-blue-600">
-                Chat on WhatsApp
+                {content.secondaryCTA}
               </Button>
             </a>
           </div>

@@ -2,8 +2,23 @@ import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router";
+import { useState, useEffect } from "react";
 
 export const Hero = () => {
+  const [content, setContent] = useState<any>(null);
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/content/hero.json').then(res => res.json()),
+      fetch('/content/stats.json').then(res => res.json())
+    ]).then(([heroData, statsData]) => {
+      setContent(heroData);
+      setStats(statsData.stats);
+    });
+  }, []);
+
+  if (!content || !stats) return null;
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -22,7 +37,7 @@ export const Hero = () => {
             className="inline-flex items-center space-x-2 bg-blue-100 dark:bg-blue-900/30 px-4 py-2 rounded-full mb-8"
           >
             <Sparkles size={16} className="text-blue-600" />
-            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">Digital Transformation Made Simple</span>
+            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{content.badge}</span>
           </motion.div>
 
           <motion.h1
@@ -31,10 +46,10 @@ export const Hero = () => {
             transition={{ delay: 0.3 }}
             className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6"
           >
-            Transform Your Business
+            {content.headline}
             <br />
             <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Into Digital Excellence
+              {content.headlineHighlight}
             </span>
           </motion.h1>
 
@@ -44,8 +59,7 @@ export const Hero = () => {
             transition={{ delay: 0.4 }}
             className="text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto"
           >
-            We empower businesses and academic institutions with cutting-edge digital solutions, 
-            seamless automation, and innovative low-code platforms that drive growth and efficiency.
+            {content.subheadline}
           </motion.p>
 
           <motion.div
@@ -63,13 +77,13 @@ export const Hero = () => {
                 >
                   <Sparkles size={20} />
                 </motion.span>
-                Get Started
+                {content.primaryCTA}
                 <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             <Link to="/services">
               <Button variant="outline" size="lg">
-                Explore Services
+                {content.secondaryCTA}
               </Button>
             </Link>
           </motion.div>
@@ -81,12 +95,7 @@ export const Hero = () => {
           transition={{ delay: 0.7, duration: 1 }}
           className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
         >
-          {[
-            { value: "500+", label: "Projects Delivered" },
-            { value: "98%", label: "Client Satisfaction" },
-            { value: "50+", label: "Enterprise Clients" },
-            { value: "24/7", label: "Support Available" }
-          ].map((stat, index) => (
+          {stats.map((stat: any, index: number) => (
             <div key={index}>
               <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 {stat.value}

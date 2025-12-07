@@ -1,0 +1,30 @@
+{
+  "logo": "/images/logo.png",
+  "logoDark": "/images/logo.png",
+  "favicon": "/favicon.ico",
+  "projectImages": {
+    "academic": "https://placehold.co/800x600/3b82f6/ffffff?text=Academic+Platform",
+    "business": "https://placehold.co/800x600/9333ea/ffffff?text=Business+Automation",
+    "corporate": "https://placehold.co/800x600/10b981/ffffff?text=Corporate+Website",
+    "whatsapp": "https://placehold.co/800x600/f97316/ffffff?text=WhatsApp+Bot",
+    "ecommerce": "https://placehold.co/800x600/6366f1/ffffff?text=E-Commerce",
+    "events": "https://placehold.co/800x600/ec4899/ffffff?text=Event+Management"
+  },
+  "serviceIcons": {
+    "webSolutions": "/images/icons/web-solutions.svg",
+    "businessDigitization": "/images/icons/business-digitization.svg",
+    "academicPlatforms": "/images/icons/academic-platforms.svg",
+    "lowCode": "/images/icons/low-code.svg",
+    "processAutomation": "/images/icons/process-automation.svg",
+    "digitalPresence": "/images/icons/digital-presence.svg"
+  },
+  "projectIcons": {
+    "academic": "/images/icons/graduation-cap.svg",
+    "business": "/images/icons/building.svg",
+    "corporate": "/images/icons/globe.svg",
+    "whatsapp": "/images/icons/message-square.svg",
+    "ecommerce": "/images/icons/shopping-cart.svg",
+    "events": "/images/icons/calendar.svg"
+  },
+  "note": "Currently using Lucide React icons. Add custom SVG icons to public/images/icons/ to replace them."
+}

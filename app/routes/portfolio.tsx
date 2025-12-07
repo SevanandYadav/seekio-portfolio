@@ -5,6 +5,9 @@ import { FloatingContact } from "../components/ui/floating-contact";
 import { motion } from "framer-motion";
 import { Card } from "../components/ui/card";
 import { GraduationCap, Building2, Globe, MessageSquare, ShoppingCart, Calendar } from "lucide-react";
+import { useState, useEffect } from "react";
+
+const iconMap: any = { GraduationCap, Building2, Globe, MessageSquare, ShoppingCart, Calendar };
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,7 +17,31 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Portfolio() {
-  const projects = [
+  const [content, setContent] = useState<any>(null);
+  const [assets, setAssets] = useState<any>(null);
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/content/portfolio.json').then(res => res.json()),
+      fetch('/content/assets.json').then(res => res.json()),
+      fetch('/content/stats.json').then(res => res.json())
+    ]).then(([portfolioData, assetsData, statsData]) => {
+      setContent(portfolioData);
+      setAssets(assetsData);
+      setStats(statsData.stats);
+    });
+  }, []);
+
+  if (!content || !assets || !stats) return null;
+
+  const imageKeys = ['academic', 'business', 'corporate', 'whatsapp', 'ecommerce', 'events'];
+  const projects = content.projects.map((project: any, index: number) => ({
+    ...project,
+    image: assets.projectImages[imageKeys[index]]
+  }));
+
+  const oldProjects = [
     {
       icon: GraduationCap,
       title: "Academic Institute Digitization",
@@ -77,10 +104,10 @@ export default function Portfolio() {
             className="text-center mb-16"
           >
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Our <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Portfolio</span>
+              {content.heading.split(' ')[0]} <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{content.heading.split(' ').slice(1).join(' ')}</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Real results from real projects. See how we've helped organizations transform their operations
+              {content.subheading}
             </p>
           </motion.div>
         </div>
@@ -89,7 +116,9 @@ export default function Portfolio() {
       <section className="py-24 bg-white dark:bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {projects.map((project, index) => (
+            {projects.map((project: any, index: number) => {
+              const Icon = iconMap[project.icon];
+              return (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -98,9 +127,16 @@ export default function Portfolio() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Card hover className="h-full">
+                  {project.image && (
+                    <img 
+                      src={project.image} 
+                      alt={project.title}
+                      className="w-full h-48 object-cover rounded-xl mb-4"
+                    />
+                  )}
                   <div className="flex items-start space-x-4 mb-4">
                     <div className={`w-14 h-14 bg-gradient-to-br ${project.gradient} rounded-xl flex items-center justify-center flex-shrink-0`}>
-                      <project.icon size={28} className="text-white" />
+                      <Icon size={28} className="text-white" />
                     </div>
                     <div>
                       <div className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">
@@ -133,7 +169,8 @@ export default function Portfolio() {
                   </div>
                 </Card>
               </motion.div>
-            ))}
+            );
+            })}
           </div>
         </div>
       </section>
@@ -154,12 +191,7 @@ export default function Portfolio() {
             </p>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {[
-                { value: "500+", label: "Projects Completed" },
-                { value: "50+", label: "Active Clients" },
-                { value: "98%", label: "Client Retention" },
-                { value: "24/7", label: "Support" }
-              ].map((stat, index) => (
+              {stats.map((stat: any, index: number) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, scale: 0.9 }}

@@ -11,7 +11,7 @@ import { Link } from "react-router";
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Our Services - Seekio Digital Solutions" },
-    { name: "description", content: "Comprehensive digital transformation services including web development, business digitization, and low-code solutions." },
+    { name: "description", content: "Comprehensive digital transformation services including web development, business digitization, and rapid application development." },
   ];
 }
 
@@ -223,7 +223,7 @@ export default function Services() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
-              Low-Code / No-Code Applications
+              Rapid Application Development
             </h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -231,7 +231,7 @@ export default function Services() {
                 <Code size={40} className="text-blue-600 mb-4" />
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Custom App Development</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Leverage powerful low-code platforms like Bubble.io, Webflow, and Airtable to build sophisticated 
+                  Leverage modern development platforms like Bubble.io, Webflow, and Airtable to build sophisticated 
                   applications in a fraction of the time and cost.
                 </p>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">

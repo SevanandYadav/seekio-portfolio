@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Mail, MessageSquare, Linkedin, Twitter } from "lucide-react";
+import { Mail, MessageSquare } from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -8,24 +8,17 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg"></div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Seekio</span>
+              <img src="/images/logo.png" alt="Seekio" className="h-10 w-auto" />
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
               Transforming businesses and academic institutions through innovative digital solutions. We simplify complexity and deliver excellence.
             </p>
             <div className="flex space-x-4">
-              <a href="mailto:contact@seekio.com" className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-blue-600 hover:text-white transition-colors">
+              <a href="mailto:info@seekio.in" className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-blue-600 hover:text-white transition-colors">
                 <Mail size={20} />
               </a>
-              <a href="https://wa.me/1234567890" className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-blue-600 hover:text-white transition-colors">
+              <a href="https://wa.me/917843027952" className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-green-600 hover:text-white transition-colors">
                 <MessageSquare size={20} />
-              </a>
-              <a href="#" className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-blue-600 hover:text-white transition-colors">
-                <Linkedin size={20} />
-              </a>
-              <a href="#" className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-blue-600 hover:text-white transition-colors">
-                <Twitter size={20} />
               </a>
             </div>
           </div>
@@ -46,7 +39,7 @@ export const Footer = () => {
               <li className="text-gray-600 dark:text-gray-400">Digital Solutions</li>
               <li className="text-gray-600 dark:text-gray-400">Business Digitization</li>
               <li className="text-gray-600 dark:text-gray-400">Academic Platforms</li>
-              <li className="text-gray-600 dark:text-gray-400">Low-Code Development</li>
+              <li className="text-gray-600 dark:text-gray-400">Rapid Application Development</li>
             </ul>
           </div>
         </div>

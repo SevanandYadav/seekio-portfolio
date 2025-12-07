@@ -180,7 +180,7 @@ export default function About() {
               </Card>
 
               <Card hover>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Low-Code Development</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Rapid Application Development</h3>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">
                   <li>• Rapid app development</li>
                   <li>• Cross-platform solutions</li>

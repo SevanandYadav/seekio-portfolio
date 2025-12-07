@@ -1,40 +1,20 @@
 import { motion } from "framer-motion";
 import { Card } from "../ui/card";
 import { Globe, Building2, GraduationCap, Zap, Workflow, Smartphone } from "lucide-react";
+import { useState, useEffect } from "react";
+
+const iconMap: any = { Globe, Building2, GraduationCap, Zap, Workflow, Smartphone };
 
 export const ServicesPreview = () => {
-  const services = [
-    {
-      icon: Globe,
-      title: "Web Solutions",
-      description: "Custom websites and web applications built with modern technologies for optimal performance and user experience."
-    },
-    {
-      icon: Building2,
-      title: "Business Digitization",
-      description: "Transform traditional business processes into efficient digital workflows with automation and integration."
-    },
-    {
-      icon: GraduationCap,
-      title: "Academic Platforms",
-      description: "Comprehensive digital solutions for educational institutions including management systems and online portals."
-    },
-    {
-      icon: Zap,
-      title: "Low-Code Development",
-      description: "Rapid application development using cutting-edge low-code platforms for faster time-to-market."
-    },
-    {
-      icon: Workflow,
-      title: "Process Automation",
-      description: "Streamline operations with intelligent automation, reducing manual work and increasing productivity."
-    },
-    {
-      icon: Smartphone,
-      title: "Digital Presence",
-      description: "Build and optimize your online presence across multiple channels to reach and engage your audience."
-    }
-  ];
+  const [content, setContent] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/content/services.json')
+      .then(res => res.json())
+      .then(data => setContent(data));
+  }, []);
+
+  if (!content) return null;
 
   return (
     <section className="py-24 bg-white dark:bg-gray-950">
@@ -46,15 +26,17 @@ export const ServicesPreview = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Our Services
+            {content.heading}
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Comprehensive digital solutions tailored to your unique business needs
+            {content.subheading}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
+          {content.services.map((service: any, index: number) => {
+            const Icon = iconMap[service.icon];
+            return (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
@@ -63,7 +45,7 @@ export const ServicesPreview = () => {
               transition={{ delay: index * 0.1 }}
             >
               <Card hover>
-                <service.icon size={40} className="text-blue-600 mb-4" />
+                <Icon size={40} className="text-blue-600 mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
                   {service.title}
                 </h3>
@@ -72,7 +54,8 @@ export const ServicesPreview = () => {
                 </p>
               </Card>
             </motion.div>
-          ))}
+          );
+          })}
         </div>
       </div>
     </section>

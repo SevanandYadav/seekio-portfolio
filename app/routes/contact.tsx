@@ -71,8 +71,8 @@ export default function Contact() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Send us an email and we'll respond within 24 hours
                 </p>
-                <a href="mailto:contact@seekio.com" className="text-blue-600 hover:text-blue-700 font-medium">
-                  contact@seekio.com
+                <a href="mailto:info@seekio.in" className="text-blue-600 hover:text-blue-700 font-medium">
+                  info@seekio.in
                 </a>
               </Card>
             </motion.div>
@@ -91,7 +91,7 @@ export default function Contact() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Chat with us directly for quick responses
                 </p>
-                <a href="https://wa.me/1234567890" className="text-blue-600 hover:text-blue-700 font-medium">
+                <a href="https://wa.me/917843027952" className="text-blue-600 hover:text-blue-700 font-medium">
                   Start Chat
                 </a>
               </Card>
@@ -111,8 +111,8 @@ export default function Contact() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Speak with our team during business hours
                 </p>
-                <a href="tel:+1234567890" className="text-blue-600 hover:text-blue-700 font-medium">
-                  +1 (234) 567-890
+                <a href="tel:+917843027952" className="text-blue-600 hover:text-blue-700 font-medium">
+                  +91 78430 27952
                 </a>
               </Card>
             </motion.div>
@@ -191,7 +191,7 @@ export default function Contact() {
                     <option value="web-development">Web Development</option>
                     <option value="business-digitization">Business Digitization</option>
                     <option value="academic-platform">Academic Platform</option>
-                    <option value="low-code">Low-Code Development</option>
+                    <option value="rapid-dev">Rapid Application Development</option>
                     <option value="automation">Process Automation</option>
                     <option value="consultation">General Consultation</option>
                   </select>
