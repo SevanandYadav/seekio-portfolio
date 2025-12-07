@@ -225,21 +225,6 @@ export default function Services() {
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Card hover>
-                <Code size={40} className="text-blue-600 mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Custom App Development</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Leverage modern development platforms like Bubble.io, Webflow, and Airtable to build sophisticated 
-                  applications in a fraction of the time and cost.
-                </p>
-                <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li>• Rapid prototyping</li>
-                  <li>• MVP development</li>
-                  <li>• Custom workflows</li>
-                  <li>• API integrations</li>
-                </ul>
-              </Card>
-
-              <Card hover>
                 <Smartphone size={40} className="text-blue-600 mb-4" />
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Cross-Platform Apps</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
