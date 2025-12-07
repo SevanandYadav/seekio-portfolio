@@ -6,13 +6,12 @@
   NODE_VERSION = "20"
 
 [functions]
-  directory = "build/server"
-  node_bundler = "none"
-  included_files = ["**/*"]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/*"
-  to = "/.netlify/builders/server"
+  to = "/.netlify/functions/server"
   status = 200
 
 [[headers]]
