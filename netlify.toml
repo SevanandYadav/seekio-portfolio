@@ -7,8 +7,7 @@
 
 [functions]
   directory = "netlify/functions"
-  node_bundler = "none"
-  external_node_modules = ["@react-router/node", "react-router"]
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/*"
