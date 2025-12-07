@@ -3,12 +3,13 @@ import { Button } from "../ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 import { useState, useEffect } from "react";
+import { getContentUrl } from "../../utils/config";
 
 export const CTA = () => {
   const [content, setContent] = useState<any>(null);
 
   useEffect(() => {
-    fetch('/content/cta.json')
+    fetch(getContentUrl('/public/content/cta.json'))
       .then(res => res.json())
       .then(data => setContent(data));
   }, []);

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Card } from "../ui/card";
 import { Globe, Building2, GraduationCap, Zap, Workflow, Smartphone } from "lucide-react";
 import { useState, useEffect } from "react";
+import { getContentUrl } from "../../utils/config";
 
 const iconMap: any = { Globe, Building2, GraduationCap, Zap, Workflow, Smartphone };
 
@@ -9,7 +10,7 @@ export const ServicesPreview = () => {
   const [content, setContent] = useState<any>(null);
 
   useEffect(() => {
-    fetch('/content/services.json')
+    fetch(getContentUrl('/public/content/services.json'))
       .then(res => res.json())
       .then(data => setContent(data));
   }, []);

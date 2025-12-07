@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Card } from "../components/ui/card";
 import { GraduationCap, Building2, Globe, MessageSquare, ShoppingCart, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
+import { getContentUrl } from "../utils/config";
 
 const iconMap: any = { GraduationCap, Building2, Globe, MessageSquare, ShoppingCart, Calendar };
 
@@ -23,9 +24,9 @@ export default function Portfolio() {
 
   useEffect(() => {
     Promise.all([
-      fetch('/content/portfolio.json').then(res => res.json()),
-      fetch('/content/assets.json').then(res => res.json()),
-      fetch('/content/stats.json').then(res => res.json())
+      fetch(getContentUrl('/public/content/portfolio.json')).then(res => res.json()),
+      fetch(getContentUrl('/public/content/assets.json')).then(res => res.json()),
+      fetch(getContentUrl('/public/content/stats.json')).then(res => res.json())
     ]).then(([portfolioData, assetsData, statsData]) => {
       setContent(portfolioData);
       setAssets(assetsData);

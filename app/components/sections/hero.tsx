@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 import { useState, useEffect } from "react";
+import { getContentUrl } from "../../utils/config";
 
 export const Hero = () => {
   const [content, setContent] = useState<any>(null);
@@ -10,8 +11,8 @@ export const Hero = () => {
 
   useEffect(() => {
     Promise.all([
-      fetch('/content/hero.json').then(res => res.json()),
-      fetch('/content/stats.json').then(res => res.json())
+      fetch(getContentUrl('/public/content/hero.json')).then(res => res.json()),
+      fetch(getContentUrl('/public/content/stats.json')).then(res => res.json())
     ]).then(([heroData, statsData]) => {
       setContent(heroData);
       setStats(statsData.stats);
