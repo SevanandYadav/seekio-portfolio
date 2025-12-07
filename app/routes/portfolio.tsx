@@ -24,9 +24,9 @@ export default function Portfolio() {
 
   useEffect(() => {
     Promise.all([
-      fetch(getContentUrl('/public/content/portfolio.json')).then(res => res.json()),
-      fetch(getContentUrl('/public/content/assets.json')).then(res => res.json()),
-      fetch(getContentUrl('/public/content/stats.json')).then(res => res.json())
+      fetch(getContentUrl('/content/portfolio.json')).then(res => res.json()),
+      fetch(getContentUrl('/content/assets.json')).then(res => res.json()),
+      fetch(getContentUrl('/content/stats.json')).then(res => res.json())
     ]).then(([portfolioData, assetsData, statsData]) => {
       setContent(portfolioData);
       setAssets(assetsData);

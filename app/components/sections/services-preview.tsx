@@ -10,7 +10,7 @@ export const ServicesPreview = () => {
   const [content, setContent] = useState<any>(null);
 
   useEffect(() => {
-    fetch(getContentUrl('/public/content/services.json'))
+    fetch(getContentUrl('/content/services.json'))
       .then(res => res.json())
       .then(data => setContent(data));
   }, []);

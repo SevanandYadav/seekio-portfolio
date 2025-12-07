@@ -12,3 +12,10 @@ export const getContentUrl = (path: string) => {
 export const getImageUrl = (path: string) => {
   return `${CONTENT_BASE_URL}${path}`;
 };
+
+// Asset URLs
+export const ASSETS = {
+  logo: `${GITHUB_RAW_BASE}/images/projects/seekiologo.png`,
+  whatsappIcon: `${GITHUB_RAW_BASE}/images/projects/whtsapp-logo.png`,
+  favicon: `${GITHUB_RAW_BASE}/images/projects/seekiologo.png`,
+};

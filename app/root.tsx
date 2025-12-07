@@ -9,9 +9,10 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { ASSETS } from "./utils/config";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "icon", href: "/favicon.png", type: "image/png" },
+  { rel: "icon", href: ASSETS.favicon, type: "image/png" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -30,7 +31,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="https://raw.githubusercontent.com/SevanandYadav/seekio-portfolio/data/build/client/favicon.png" type="image/png" />
+        <link rel="icon" href={ASSETS.favicon} type="image/png" />
         <Meta />
         <Links />
       </head>

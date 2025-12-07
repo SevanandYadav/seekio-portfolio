@@ -11,8 +11,8 @@ export const Hero = () => {
 
   useEffect(() => {
     Promise.all([
-      fetch(getContentUrl('/public/content/hero.json')).then(res => res.json()),
-      fetch(getContentUrl('/public/content/stats.json')).then(res => res.json())
+      fetch(getContentUrl('/content/hero.json')).then(res => res.json()),
+      fetch(getContentUrl('/content/stats.json')).then(res => res.json())
     ]).then(([heroData, statsData]) => {
       setContent(heroData);
       setStats(statsData.stats);

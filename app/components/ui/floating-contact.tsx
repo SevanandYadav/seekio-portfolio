@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { getImageUrl } from "../../utils/config";
+import { ASSETS } from "../../utils/config";
 
 export const FloatingContact = () => {
   return (
@@ -24,7 +24,7 @@ export const FloatingContact = () => {
         animate={{ rotate: 360 }}
         transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
       >
-        <img src={getImageUrl('/images/projects/whtsapp-logo.png')} alt="WhatsApp" className="w-6 h-6 md:w-7 md:h-7" />
+        <img src={ASSETS.whatsappIcon} alt="WhatsApp" className="w-6 h-6 md:w-7 md:h-7" />
       </motion.div>
       
       <motion.div
