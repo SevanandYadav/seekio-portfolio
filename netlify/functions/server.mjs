@@ -1,6 +1,20 @@
-import { createRequestHandler } from "@react-router/node";
+import { createRequestListener } from "@react-router/node";
 import * as build from "../../build/server/index.js";
 
-const handler = createRequestHandler({ build, mode: "production" });
+const requestListener = createRequestListener({ build, mode: "production" });
 
-export { handler };
+export async function handler(event) {
+  const request = new Request(event.rawUrl || `https://${event.headers.host}${event.path}`, {
+    method: event.httpMethod,
+    headers: event.headers,
+    body: event.body,
+  });
+
+  const response = await requestListener(request);
+  
+  return {
+    statusCode: response.status,
+    headers: Object.fromEntries(response.headers),
+    body: await response.text(),
+  };
+}
