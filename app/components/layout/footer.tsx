@@ -1,8 +1,17 @@
 import { Link } from "react-router";
 import { Mail, MessageSquare } from "lucide-react";
-import { ASSETS } from "../../utils/config";
+import { ASSETS, getContactInfo } from "../../utils/config";
+import { useState, useEffect } from "react";
 
 export const Footer = () => {
+  const [contactInfo, setContactInfo] = useState<any>(null);
+
+  useEffect(() => {
+    getContactInfo().then(info => setContactInfo(info));
+  }, []);
+
+  if (!contactInfo) return null;
+
   return (
     <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -15,10 +24,10 @@ export const Footer = () => {
               Transforming businesses and academic institutions through innovative digital solutions. We simplify complexity and deliver excellence.
             </p>
             <div className="flex space-x-4">
-              <a href="mailto:info@seekio.in" className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-blue-600 hover:text-white transition-colors">
+              <a href={`mailto:${contactInfo.email}`} className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-blue-600 hover:text-white transition-colors">
                 <Mail size={20} />
               </a>
-              <a href="https://wa.me/917843027952" className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-green-600 hover:text-white transition-colors">
+              <a href={contactInfo.whatsappUrl} className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-green-600 hover:text-white transition-colors">
                 <MessageSquare size={20} />
               </a>
             </div>

@@ -17,3 +17,13 @@ export const ASSETS = {
   whatsappIcon: `${GITHUB_RAW_BASE}/images/projects/whtsapp-logo.png`,
   favicon: `${GITHUB_RAW_BASE}/images/projects/seekiologo.png`,
 };
+
+// Contact info cache
+let contactInfoCache: any = null;
+
+export const getContactInfo = async () => {
+  if (contactInfoCache) return contactInfoCache;
+  const response = await fetch(getContentUrl('/contact-info.json'));
+  contactInfoCache = await response.json();
+  return contactInfoCache;
+};

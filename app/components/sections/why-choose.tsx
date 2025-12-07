@@ -1,39 +1,20 @@
 import { motion } from "framer-motion";
 import { Shield, Rocket, Users, Award, Clock, TrendingUp } from "lucide-react";
+import { useState, useEffect } from "react";
+import { getContentUrl } from "../../utils/config";
+
+const iconMap: any = { Shield, Rocket, Users, Award, Clock, TrendingUp };
 
 export const WhyChoose = () => {
-  const reasons = [
-    {
-      icon: Shield,
-      title: "Trusted Expertise",
-      description: "Years of experience delivering enterprise-grade solutions with proven results"
-    },
-    {
-      icon: Rocket,
-      title: "Fast Delivery",
-      description: "Agile methodology ensures rapid development without compromising quality"
-    },
-    {
-      icon: Users,
-      title: "Client-Centric",
-      description: "Your success is our priority. We work closely with you at every step"
-    },
-    {
-      icon: Award,
-      title: "Quality Assured",
-      description: "Rigorous testing and best practices guarantee reliable, scalable solutions"
-    },
-    {
-      icon: Clock,
-      title: "24/7 Support",
-      description: "Round-the-clock assistance to keep your operations running smoothly"
-    },
-    {
-      icon: TrendingUp,
-      title: "Scalable Solutions",
-      description: "Built to grow with your business, from startup to enterprise"
-    }
-  ];
+  const [content, setContent] = useState<any>(null);
+
+  useEffect(() => {
+    fetch(getContentUrl('/why-choose.json'))
+      .then(res => res.json())
+      .then(data => setContent(data));
+  }, []);
+
+  if (!content) return null;
 
   return (
     <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-950">
@@ -45,15 +26,17 @@ export const WhyChoose = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Why Choose Seekio?
+            {content.heading}
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            We combine technical excellence with business understanding to deliver exceptional results
+            {content.subheading}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {reasons.map((reason, index) => (
+          {content.reasons.map((reason: any, index: number) => {
+            const Icon = iconMap[reason.icon];
+            return (
             <motion.div
               key={index}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -63,7 +46,7 @@ export const WhyChoose = () => {
               className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mb-4">
-                <reason.icon size={24} className="text-white" />
+                <Icon size={24} className="text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
                 {reason.title}
@@ -72,7 +55,8 @@ export const WhyChoose = () => {
                 {reason.description}
               </p>
             </motion.div>
-          ))}
+          );
+          })}
         </div>
       </div>
     </section>

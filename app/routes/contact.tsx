@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Mail, MessageSquare, Phone } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getContactInfo } from "../utils/config";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -15,6 +16,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Contact() {
+  const [contactInfo, setContactInfo] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -22,6 +24,12 @@ export default function Contact() {
     service: "",
     message: ""
   });
+
+  useEffect(() => {
+    getContactInfo().then(info => setContactInfo(info));
+  }, []);
+
+  if (!contactInfo) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,8 +78,8 @@ export default function Contact() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Send us an email and we'll respond within 24 hours
                 </p>
-                <a href="mailto:info@seekio.in" className="text-blue-600 hover:text-blue-700 font-medium">
-                  info@seekio.in
+                <a href={`mailto:${contactInfo.email}`} className="text-blue-600 hover:text-blue-700 font-medium">
+                  {contactInfo.email}
                 </a>
               </Card>
             </motion.div>
@@ -89,7 +97,7 @@ export default function Contact() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Chat with us directly for quick responses
                 </p>
-                <a href="https://wa.me/917843027952" className="text-blue-600 hover:text-blue-700 font-medium">
+                <a href={contactInfo.whatsappUrl} className="text-blue-600 hover:text-blue-700 font-medium">
                   Start Chat
                 </a>
               </Card>
@@ -108,8 +116,8 @@ export default function Contact() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Speak with our team during business hours
                 </p>
-                <a href="tel:+917843027952" className="text-blue-600 hover:text-blue-700 font-medium">
-                  +91 78430 27952
+                <a href={`tel:${contactInfo.phone}`} className="text-blue-600 hover:text-blue-700 font-medium">
+                  {contactInfo.phone}
                 </a>
               </Card>
             </motion.div>

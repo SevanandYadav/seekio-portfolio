@@ -1,10 +1,19 @@
 import { motion } from "framer-motion";
-import { ASSETS } from "../../utils/config";
+import { ASSETS, getContactInfo } from "../../utils/config";
+import { useState, useEffect } from "react";
 
 export const FloatingContact = () => {
+  const [whatsappUrl, setWhatsappUrl] = useState("");
+
+  useEffect(() => {
+    getContactInfo().then(info => setWhatsappUrl(info.whatsappUrl));
+  }, []);
+
+  if (!whatsappUrl) return null;
+
   return (
     <motion.a
-      href="https://wa.me/917843027952"
+      href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full p-3 md:p-4 shadow-2xl hover:shadow-green-500/50 transition-shadow"
