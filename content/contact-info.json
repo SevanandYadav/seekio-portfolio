@@ -1,0 +1,38 @@
+{
+  "email": "info@seekio.in",
+  "phone": "+91 78430 27952",
+  "phoneRaw": "917843027952",
+  "whatsappUrl": "https://wa.me/917843027952",
+  "whyChoose": [
+    {
+      "icon": "Shield",
+      "title": "Trusted Expertise",
+      "description": "Years of experience delivering enterprise-grade solutions with proven results"
+    },
+    {
+      "icon": "Rocket",
+      "title": "Fast Delivery",
+      "description": "Agile methodology ensures rapid development without compromising quality"
+    },
+    {
+      "icon": "Users",
+      "title": "Client-Centric",
+      "description": "Your success is our priority. We work closely with you at every step"
+    },
+    {
+      "icon": "Award",
+      "title": "Quality Assured",
+      "description": "Rigorous testing and best practices guarantee reliable, scalable solutions"
+    },
+    {
+      "icon": "Clock",
+      "title": "24/7 Support",
+      "description": "Round-the-clock assistance to keep your operations running smoothly"
+    },
+    {
+      "icon": "TrendingUp",
+      "title": "Scalable Solutions",
+      "description": "Built to grow with your business, from startup to enterprise"
+    }
+  ]
+}
