@@ -1,12 +1,12 @@
 // Content source configuration
-const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/SevanandYadav/seekio-portfolio/data/build/client";
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/SevanandYadav/seekio-portfolio/data";
 
 export const CONTENT_BASE_URL = process.env.NODE_ENV === 'production' 
   ? GITHUB_RAW_BASE 
   : '';
 
 export const getContentUrl = (path: string) => {
-  return `${CONTENT_BASE_URL}${path}`;
+  return `${CONTENT_BASE_URL}/content${path}`;
 };
 
 export const getImageUrl = (path: string) => {

@@ -9,7 +9,7 @@ export const CTA = () => {
   const [content, setContent] = useState<any>(null);
 
   useEffect(() => {
-    fetch(getContentUrl('/content/cta.json'))
+    fetch(getContentUrl('/cta.json'))
       .then(res => res.json())
       .then(data => setContent(data));
   }, []);
