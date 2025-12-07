@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { Mail, MessageSquare } from "lucide-react";
+import { getImageUrl } from "../../utils/config";
 
 export const Footer = () => {
   return (
@@ -8,7 +9,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <img src="/images/logo.png" alt="Seekio" className="h-10 w-auto" />
+              <img src={getImageUrl('/images/logo.png')} alt="Seekio" className="h-10 w-auto" />
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
               Transforming businesses and academic institutions through innovative digital solutions. We simplify complexity and deliver excellence.

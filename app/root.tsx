@@ -30,7 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="icon" href="https://raw.githubusercontent.com/SevanandYadav/seekio-portfolio/data/build/client/favicon.png" type="image/png" />
         <Meta />
         <Links />
       </head>
