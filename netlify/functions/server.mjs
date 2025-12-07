@@ -7,7 +7,7 @@ export async function handler(event) {
   const request = new Request(event.rawUrl || `https://${event.headers.host}${event.path}`, {
     method: event.httpMethod,
     headers: event.headers,
-    body: event.body,
+    body: event.httpMethod !== "GET" && event.httpMethod !== "HEAD" ? event.body : undefined,
   });
 
   const response = await requestListener(request);
