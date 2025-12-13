@@ -26,17 +26,7 @@ export default function Contact() {
   });
 
   useEffect(() => {
-    getContactInfo()
-      .then(info => setContactInfo(info))
-      .catch(error => {
-        console.error('Failed to load contact info:', error);
-        // Fallback contact info
-        setContactInfo({
-          email: 'info@seekio.in',
-          phone: '+91 91400 44854',
-          whatsappUrl: 'https://wa.me/919140044854'
-        });
-      });
+    getContactInfo().then(info => setContactInfo(info));
   }, []);
 
   if (!contactInfo) {
@@ -65,16 +55,6 @@ export default function Contact() {
     setFormStatus("Sending...");
     
     try {
-      // Check if running locally (development)
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        // Local development - simulate success
-        console.log('Local development - form data:', formData);
-        setFormStatus("[LOCAL DEV] Message logged to console. Deploy to test email functionality.");
-        setFormData({ name: "", email: "", company: "", service: "", message: "" });
-        setTimeout(() => setFormStatus(""), 5000);
-        return;
-      }
-
       const response = await fetch('/.netlify/functions/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
