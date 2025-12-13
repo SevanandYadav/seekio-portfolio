@@ -8,7 +8,8 @@
       "description": "Send us an email and we'll respond within 24 hours",
       "value": "info@seekio.in",
       "link": "mailto:info@seekio.in",
-      "gradient": "from-blue-600 to-indigo-600"
+      "gradient": "from-blue-600 to-indigo-600",
+      "fromEmail": "seekio-portfolio@seekio.in"
     },
     {
       "icon": "MessageSquare",
