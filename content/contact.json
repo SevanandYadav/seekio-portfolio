@@ -1,6 +1,10 @@
 {
   "heading": "Get in Touch",
   "subheading": "Ready to transform your business? Let's start a conversation about your digital needs",
+  "email": "info@seekio.in",
+  "phone": "+91 91400 44854",
+  "phoneRaw": "919140044854",
+  "whatsappUrl": "https://wa.me/919140044854",
   "contactMethods": [
     {
       "icon": "Mail",
@@ -16,15 +20,15 @@
       "title": "WhatsApp",
       "description": "Chat with us directly for quick responses",
       "value": "Start Chat",
-      "link": "https://wa.me/917843027952",
+      "link": "https://wa.me/919140044854",
       "gradient": "from-green-600 to-emerald-600"
     },
     {
       "icon": "Phone",
       "title": "Call Us",
       "description": "Speak with our team during business hours",
-      "value": "+91 78430 27952",
-      "link": "tel:+917843027952",
+      "value": "+91 91400 44854",
+      "link": "tel:+919140044854",
       "gradient": "from-purple-600 to-pink-600"
     }
   ],
