@@ -23,7 +23,14 @@ let contactInfoCache: any = null;
 
 export const getContactInfo = async () => {
   if (contactInfoCache) return contactInfoCache;
-  const response = await fetch(getContentUrl('/contact-info.json'));
-  contactInfoCache = await response.json();
+  const response = await fetch(getContentUrl('/contact.json'));
+  const data = await response.json();
+  // Extract contact info from the contact.json structure
+  contactInfoCache = {
+    email: data.email,
+    phone: data.phone,
+    phoneRaw: data.phoneRaw,
+    whatsappUrl: data.whatsappUrl
+  };
   return contactInfoCache;
 };
