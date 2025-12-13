@@ -24,6 +24,8 @@ export default function Contact() {
     service: "",
     message: ""
   });
+  const [formStatus, setFormStatus] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetch(getContentUrl('/contact.json'))
@@ -61,9 +63,6 @@ export default function Contact() {
   const emailMethod = contactData.contactMethods.find((method: any) => method.icon === 'Mail');
   const whatsappMethod = contactData.contactMethods.find((method: any) => method.icon === 'MessageSquare');
   const phoneMethod = contactData.contactMethods.find((method: any) => method.icon === 'Phone');
-
-  const [formStatus, setFormStatus] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
