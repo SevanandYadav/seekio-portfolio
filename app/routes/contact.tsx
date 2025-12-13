@@ -27,8 +27,24 @@ export default function Contact() {
 
   useEffect(() => {
     fetch(getContentUrl('/contact.json'))
-      .then(res => res.json())
-      .then(data => setContactData(data));
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(data => setContactData(data))
+      .catch(error => {
+        console.error('Contact page error:', error);
+        // Set minimal fallback to prevent crash
+        setContactData({
+          heading: "Get in Touch",
+          subheading: "Contact us for your digital needs",
+          contactMethods: [
+            { icon: "Mail", title: "Email", description: "Email us", value: "info@seekio.in", link: "mailto:info@seekio.in" },
+            { icon: "MessageSquare", title: "WhatsApp", description: "Chat with us", value: "Start Chat", link: "https://wa.me/919140044854" },
+            { icon: "Phone", title: "Call", description: "Call us", value: "+91 91400 44854", link: "tel:+919140044854" }
+          ]
+        });
+      });
   }, []);
 
   if (!contactData) {
