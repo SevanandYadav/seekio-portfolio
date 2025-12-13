@@ -6,7 +6,7 @@ import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Mail, MessageSquare, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getContactInfo } from "../utils/config";
+import { getContentUrl } from "../utils/config";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -16,7 +16,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Contact() {
-  const [contactInfo, setContactInfo] = useState<any>(null);
+  const [contactData, setContactData] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,10 +26,12 @@ export default function Contact() {
   });
 
   useEffect(() => {
-    getContactInfo().then(info => setContactInfo(info));
+    fetch(getContentUrl('/contact.json'))
+      .then(res => res.json())
+      .then(data => setContactData(data));
   }, []);
 
-  if (!contactInfo) {
+  if (!contactData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -39,6 +41,10 @@ export default function Contact() {
       </div>
     );
   }
+
+  const emailMethod = contactData.contactMethods.find((method: any) => method.icon === 'Mail');
+  const whatsappMethod = contactData.contactMethods.find((method: any) => method.icon === 'MessageSquare');
+  const phoneMethod = contactData.contactMethods.find((method: any) => method.icon === 'Phone');
 
   const [formStatus, setFormStatus] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,7 +77,7 @@ export default function Contact() {
         throw new Error(data.message || 'Failed to send');
       }
     } catch (error) {
-      setFormStatus(`Failed to send message. Please try emailing directly at ${contactInfo.email}`);
+      setFormStatus(`Failed to send message. Please try emailing directly at ${emailMethod?.value}`);
       setTimeout(() => setFormStatus(""), 5000);
     } finally {
       setIsSubmitting(false);
@@ -94,10 +100,10 @@ export default function Contact() {
             className="text-center mb-16"
           >
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Get in <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Touch</span>
+              {contactData.heading.split(' ')[0]} <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{contactData.heading.split(' ').slice(1).join(' ')}</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Ready to transform your business? Let's start a conversation about your digital needs
+              {contactData.subheading}
             </p>
           </motion.div>
         </div>
@@ -114,12 +120,12 @@ export default function Contact() {
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mb-4">
                   <Mail size={24} className="text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Email Us</h3>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{emailMethod?.title}</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Send us an email and we'll respond within 24 hours
+                  {emailMethod?.description}
                 </p>
-                <a href={`mailto:${contactInfo.email}`} className="text-blue-600 hover:text-blue-700 font-medium">
-                  {contactInfo.email}
+                <a href={emailMethod?.link} className="text-blue-600 hover:text-blue-700 font-medium">
+                  {emailMethod?.value}
                 </a>
               </Card>
             </motion.div>
@@ -133,12 +139,12 @@ export default function Contact() {
                 <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center mb-4">
                   <MessageSquare size={24} className="text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">WhatsApp</h3>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{whatsappMethod?.title}</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Chat with us directly for quick responses
+                  {whatsappMethod?.description}
                 </p>
-                <a href={contactInfo.whatsappUrl} className="text-blue-600 hover:text-blue-700 font-medium">
-                  Start Chat
+                <a href={whatsappMethod?.link} className="text-blue-600 hover:text-blue-700 font-medium">
+                  {whatsappMethod?.value}
                 </a>
               </Card>
             </motion.div>
@@ -152,12 +158,12 @@ export default function Contact() {
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center mb-4">
                   <Phone size={24} className="text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Call Us</h3>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{phoneMethod?.title}</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Speak with our team during business hours
+                  {phoneMethod?.description}
                 </p>
-                <a href={`tel:${contactInfo.phone}`} className="text-blue-600 hover:text-blue-700 font-medium">
-                  {contactInfo.phone}
+                <a href={phoneMethod?.link} className="text-blue-600 hover:text-blue-700 font-medium">
+                  {phoneMethod?.value}
                 </a>
               </Card>
             </motion.div>
