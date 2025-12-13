@@ -31,11 +31,42 @@ export default function Contact() {
 
   if (!contactInfo) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [formStatus, setFormStatus] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    alert("Thank you for your inquiry! We'll get back to you within 24 hours.");
-    setFormData({ name: "", email: "", company: "", service: "", message: "" });
+    
+    if (!formData.name || !formData.email || !formData.service || !formData.message) {
+      setFormStatus("Please fill in all required fields");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setFormStatus("Sending...");
+    
+    try {
+      const response = await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setFormStatus("Message sent successfully! We'll get back to you within 24 hours.");
+        setFormData({ name: "", email: "", company: "", service: "", message: "" });
+        setTimeout(() => setFormStatus(""), 5000);
+      } else {
+        throw new Error(data.message || 'Failed to send');
+      }
+    } catch (error) {
+      setFormStatus(`Failed to send message. Please try emailing directly at ${contactInfo.email}`);
+      setTimeout(() => setFormStatus(""), 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -131,6 +162,17 @@ export default function Contact() {
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
                 Send Us a Message
               </h2>
+              {formStatus && (
+                <div className={`p-4 rounded-lg mb-6 ${
+                  formStatus.includes('successfully') 
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                    : formStatus.includes('Failed') 
+                    ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                    : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                }`}>
+                  {formStatus}
+                </div>
+              )}
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -217,8 +259,8 @@ export default function Contact() {
                   />
                 </div>
 
-                <Button type="submit" size="lg" className="w-full">
-                  Send Message
+                <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </form>
             </motion.div>
