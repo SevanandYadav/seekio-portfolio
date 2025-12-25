@@ -45,6 +45,9 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showTestModeModal, setShowTestModeModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   
   // Close user menu when clicking outside
   useEffect(() => {
@@ -81,11 +84,33 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
     }
   };
   
-  const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
-    sessionStorage.removeItem('dashboard-data');
-    window.location.href = '/signup';
+  const handlePasswordReset = () => {
+    if (newPassword.length < 6) {
+      alert('Password must be at least 6 characters');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+    
+    // Update cached credentials
+    const cachedCreds = localStorage.getItem('trial_credentials');
+    if (cachedCreds) {
+      try {
+        const trialCreds = JSON.parse(cachedCreds);
+        trialCreds.password = newPassword;
+        localStorage.setItem('trial_credentials', JSON.stringify(trialCreds));
+        alert('Password updated successfully!');
+        setShowPasswordModal(false);
+        setNewPassword("");
+        setConfirmPassword("");
+      } catch (e) {
+        alert('Failed to update password');
+      }
+    } else {
+      alert('No cached credentials found');
+    }
   };
 
   const getDaysInMonth = (date: Date) => {
@@ -219,7 +244,13 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
               </button>
               {showUserMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  <button className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <button 
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      setShowPasswordModal(true);
+                    }}
+                    className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
                     <Key size={16} className="mr-3" />
                     Reset Password
                   </button>
@@ -332,6 +363,55 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
         onClose={() => setShowTestModeModal(false)}
         data={data}
       />
+
+      {/* Password Reset Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Reset Password</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter new password"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Confirm new password"
+                />
+              </div>
+            </div>
+            <div className="flex space-x-3 mt-6">
+              <button
+                onClick={handlePasswordReset}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium"
+              >
+                Update Password
+              </button>
+              <button
+                onClick={() => {
+                  setShowPasswordModal(false);
+                  setNewPassword("");
+                  setConfirmPassword("");
+                }}
+                className="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -23,6 +23,9 @@ const phases = [
 
 export default function Onboarding() {
   const [currentPhase, setCurrentPhase] = useState(0);
+  const [showTrialModal, setShowTrialModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedPlanForTrial, setSelectedPlanForTrial] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     instituteType: "",
@@ -56,48 +59,59 @@ export default function Onboarding() {
   };
 
   const handleStartTrial = async (planName: string) => {
-    const confirmed = window.confirm(`Start free trial for ${planName}? Your trial will expire after 30 days`);
-    if (confirmed) {
-      // Generate random password
-      const password = Math.random().toString(36).slice(-8);
+    setSelectedPlanForTrial(planName);
+    setShowTrialModal(true);
+  };
+
+  const confirmStartTrial = async () => {
+    setShowTrialModal(false);
+    // Generate random password
+    const password = Math.random().toString(36).slice(-8);
+    
+    // Store credentials in localStorage for login
+    const trialCredentials = {
+      email: formData.instituteEmail,
+      password: password,
+      isSessionEnabledTillBE: true,
+      instituteName: formData.instituteName,
+      createdAt: Date.now()
+    };
+    localStorage.setItem('trial_credentials', JSON.stringify(trialCredentials));
+    
+    try {
+      // Send credentials email
+      await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Seekio Campus Credentials',
+          email: formData.instituteEmail,
+          company: 'Seekio Campus',
+          service: 'trial-credentials',
+          message: `Your trial credentials:\nEmail: ${formData.instituteEmail}\nPassword: ${password}`,
+          isCredentials: true,
+          credentials: { email: formData.instituteEmail, password }
+        })
+      });
       
-      try {
-        // Send credentials email
-        await fetch('/.netlify/functions/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: 'Seekio Campus Credentials',
-            email: formData.instituteEmail,
-            company: 'Seekio Campus',
-            service: 'trial-credentials',
-            message: `Your trial credentials:\nEmail: ${formData.instituteEmail}\nPassword: ${password}`,
-            isCredentials: true,
-            credentials: { email: formData.instituteEmail, password }
-          })
-        });
-        
-        // Send welcome email
-        await fetch('/.netlify/functions/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: 'Seekio Campus Welcome',
-            email: formData.instituteEmail,
-            company: 'Seekio Campus',
-            service: 'welcome-demo',
-            message: 'Welcome to Seekio Campus Solutions',
-            isWelcome: true,
-            instituteName: formData.instituteName
-          })
-        });
-        
-        alert('Trial started successfully! Credentials have been sent to your email');
-        window.location.href = '/dashboard';
-      } catch (error) {
-        alert('Trial started successfully! Credentials have been sent to your email');
-        window.location.href = '/dashboard';
-      }
+      // Send welcome email
+      await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Seekio Campus Welcome',
+          email: formData.instituteEmail,
+          company: 'Seekio Campus',
+          service: 'welcome-demo',
+          message: 'Welcome to Seekio Campus Solutions',
+          isWelcome: true,
+          instituteName: formData.instituteName
+        })
+      });
+      
+      setShowSuccessModal(true);
+    } catch (error) {
+      setShowSuccessModal(true);
     }
   };
 
@@ -369,6 +383,68 @@ export default function Onboarding() {
           )}
         </div>
       </motion.div>
+
+      {/* Trial Confirmation Modal */}
+      {showTrialModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-6 max-w-md w-full mx-4"
+          >
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              Start Free Trial for {selectedPlanForTrial}?
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Your trial will expire after 30 days. You can upgrade or continue with the free plan anytime.
+            </p>
+            <div className="flex space-x-3">
+              <Button
+                onClick={confirmStartTrial}
+                className="flex-1"
+              >
+                Start
+              </Button>
+              <Button
+                onClick={() => setShowTrialModal(false)}
+                variant="outline"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-6 max-w-md w-full mx-4"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="text-green-600" size={32} />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Trial Started Successfully!
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Credentials have been sent to your email. Check your inbox to get started.
+              </p>
+              <Button
+                onClick={() => window.location.href = '/dashboard'}
+                className="w-full"
+              >
+                Continue to Dashboard
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
