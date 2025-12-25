@@ -657,7 +657,7 @@ export default function Signup() {
                     </div>
 
                     <button 
-                      onClick={() => window.location.href = '/dashboard'}
+                      onClick={() => window.location.href = '/onboarding'}
                       className="w-full py-3 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors"
                     >
                       {signupData.signup.steps.success.buttonText}
