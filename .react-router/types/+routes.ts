@@ -23,6 +23,9 @@ type Pages = {
   "/portfolio": {
     params: {};
   };
+  "/pricing": {
+    params: {};
+  };
   "/contact": {
     params: {};
   };
@@ -31,7 +34,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/about" | "/services" | "/portfolio" | "/contact";
+    page: "/" | "/about" | "/services" | "/portfolio" | "/pricing" | "/contact";
   };
   "routes/home.tsx": {
     id: "routes/home";
@@ -49,6 +52,10 @@ type RouteFiles = {
     id: "routes/portfolio";
     page: "/portfolio";
   };
+  "routes/pricing.tsx": {
+    id: "routes/pricing";
+    page: "/pricing";
+  };
   "routes/contact.tsx": {
     id: "routes/contact";
     page: "/contact";
@@ -61,5 +68,6 @@ type RouteModules = {
   "routes/about": typeof import("./app/routes/about.tsx");
   "routes/services": typeof import("./app/routes/services.tsx");
   "routes/portfolio": typeof import("./app/routes/portfolio.tsx");
+  "routes/pricing": typeof import("./app/routes/pricing.tsx");
   "routes/contact": typeof import("./app/routes/contact.tsx");
 };
