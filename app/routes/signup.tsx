@@ -133,22 +133,34 @@ export default function Signup() {
       // For signup, always use email
       if (activeTab === 'signup') {
         const otpCode = Math.floor(100000 + Math.random() * 900000);
-        const response = await fetch('https://emailgator.vercel.app/api/send-email', {
+        console.log('Sending OTP to:', email, 'OTP:', otpCode);
+        
+        const response = await fetch('/.netlify/functions/send-email', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            to: email,
-            subject: 'Seekio Campus - Email Verification',
-            message: `Your OTP for Seekio Campus signup is: ${otpCode}`
+            name: 'Seekio Campus Signup',
+            email: email,
+            company: 'Seekio Campus',
+            service: 'signup-otp',
+            message: `Your OTP for Seekio Campus signup is: ${otpCode}`,
+            isOTP: true,
+            otpCode: otpCode
           })
         });
         
+        console.log('Email API response status:', response.status);
+        const responseData = await response.json();
+        console.log('Email API response:', responseData);
+        
         if (response.ok) {
+          // Store OTP for verification
+          sessionStorage.setItem('signup_otp', otpCode.toString());
           setStep('otp');
         } else {
-          setErrors({email: 'Failed to send OTP. Please try again.'});
+          setErrors({email: `Failed to send OTP: ${responseData.message || 'Please try again'}`});
         }
       } else {
         // Login flow - use existing logic
@@ -255,7 +267,23 @@ export default function Signup() {
   const handleVerifyOTP = async () => {
     if (!otp || otp.length < 4) return;
     
-    // Test OTP bypass
+    // For signup, check stored OTP
+    if (activeTab === 'signup') {
+      const storedOtp = sessionStorage.getItem('signup_otp');
+      if (otp === storedOtp) {
+        setLoading(true);
+        setTimeout(() => {
+          setStep('success');
+          setLoading(false);
+        }, 1000);
+        return;
+      } else {
+        alert('Invalid OTP. Please try again.');
+        return;
+      }
+    }
+    
+    // Test OTP bypass for login
     if (otp === signupData?.testCredentials?.otp) {
       setLoading(true);
       setTimeout(() => {
