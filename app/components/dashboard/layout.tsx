@@ -113,6 +113,13 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_data');
+    sessionStorage.removeItem('dashboard-data');
+    window.location.href = '/signup';
+  };
+
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };

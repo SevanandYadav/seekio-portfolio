@@ -277,7 +277,7 @@ export default function Signup() {
           localStorage.setItem('user_data', JSON.stringify(data.user));
         }
         
-        setStep('success');
+        window.location.href = '/dashboard';
       } else {
         const errorData = await response.json();
         setErrors({email: errorData.message || 'Invalid email or password'});

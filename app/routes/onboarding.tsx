@@ -25,6 +25,7 @@ export default function Onboarding() {
   const [currentPhase, setCurrentPhase] = useState(0);
   const [showTrialModal, setShowTrialModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successStep, setSuccessStep] = useState(1); // 1 = confirming, 2 = success
   const [selectedPlanForTrial, setSelectedPlanForTrial] = useState("");
   const [formData, setFormData] = useState({
     name: "",
@@ -65,6 +66,9 @@ export default function Onboarding() {
 
   const confirmStartTrial = async () => {
     setShowTrialModal(false);
+    setSuccessStep(1);
+    setShowSuccessModal(true);
+    
     // Generate random password
     const password = Math.random().toString(36).slice(-8);
     
@@ -109,9 +113,9 @@ export default function Onboarding() {
         })
       });
       
-      setShowSuccessModal(true);
+      setSuccessStep(2);
     } catch (error) {
-      setShowSuccessModal(true);
+      setSuccessStep(2);
     }
   };
 
@@ -401,7 +405,7 @@ export default function Onboarding() {
             <div className="flex space-x-3">
               <Button
                 onClick={confirmStartTrial}
-                className="flex-1"
+                className="flex-1 bg-transparent border border-blue-600 text-blue-600 hover:bg-blue-50"
               >
                 Start
               </Button>
@@ -419,28 +423,44 @@ export default function Onboarding() {
 
       {/* Success Modal */}
       {showSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-6 max-w-md w-full mx-4"
+            className="bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-200"
           >
             <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="text-green-600" size={32} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Trial Started Successfully!
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Credentials have been sent to your email. Check your inbox to get started.
-              </p>
-              <Button
-                onClick={() => window.location.href = '/dashboard'}
-                className="w-full"
-              >
-                Continue to Dashboard
-              </Button>
+              {successStep === 1 ? (
+                <>
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    Setting up your trial...
+                  </h3>
+                  <p className="text-gray-600">
+                    Please wait while we prepare your account and send credentials to your email.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Check className="text-green-600" size={32} />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">
+                    Trial Started Successfully!
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Credentials have been sent to your email. Check your inbox to get started.
+                  </p>
+                  <Button
+                    onClick={() => window.location.href = '/dashboard'}
+                    className="w-full bg-transparent border border-blue-600 text-blue-600 hover:bg-blue-50"
+                  >
+                    Continue to Dashboard
+                  </Button>
+                </>
+              )}
             </div>
           </motion.div>
         </div>
