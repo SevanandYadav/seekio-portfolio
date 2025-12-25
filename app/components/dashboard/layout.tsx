@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { 
   LayoutDashboard, Settings, Users, UserCheck, DollarSign, 
   GraduationCap, UserPlus, MessageSquare, Bell, Calendar,
@@ -6,6 +6,7 @@ import {
   Bus, Shield, Send, LogOut, AlertTriangle, ChevronLeft,
   ChevronRight, ChevronsLeft, ChevronsRight, User, Key, Lock
 } from "lucide-react";
+import { TestModeModal } from "./test-mode-modal";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -43,6 +44,42 @@ const menuItems = [
 export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: DashboardLayoutProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showTestModeModal, setShowTestModeModal] = useState(false);
+  
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showUserMenu) {
+        setShowUserMenu(false);
+      }
+    };
+    
+    if (showUserMenu) {
+      document.addEventListener('click', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showUserMenu]);
+  
+  const calculateTrialDays = (signupDate: string) => {
+    if (!signupDate) return 29;
+    const signup = new Date(signupDate);
+    const today = new Date();
+    const trialEnd = new Date(signup.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days from signup
+    const daysLeft = Math.ceil((trialEnd.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
+    return Math.max(0, daysLeft);
+  };
+  
+  const handleGoLive = () => {
+    if (confirm("Once you go live, you will be logged out and you will have to log back in. Continue?")) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+      sessionStorage.removeItem('dashboard-data');
+      window.location.href = '/signup';
+    }
+  };
   
   const handleLogout = () => {
     localStorage.removeItem('auth_token');
@@ -118,7 +155,7 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
             return (
               <button
                 key={item.id}
-                onClick={() => item.locked ? setActiveMenu('locked') : setActiveMenu(item.id)}
+                onClick={() => item.locked ? setActiveMenu(item.id) : setActiveMenu(item.id)}
                 className={`w-full flex items-center px-6 py-3 text-left hover:bg-blue-50 transition-colors ${
                   activeMenu === item.id 
                     ? 'bg-blue-50 text-blue-600 border-r-2 border-blue-600' 
@@ -150,43 +187,51 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
         {/* Header */}
         <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center bg-orange-100 text-orange-800 px-3 py-1 rounded-full">
-                <AlertTriangle size={16} className="mr-2" />
-                <span className="text-sm font-medium">You are on Test Mode</span>
-              </div>
-              <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                Go Live
-              </button>
+            <div className="flex items-center bg-orange-100 text-orange-800 px-3 py-1 rounded-full">
+              <AlertTriangle size={16} className="mr-2" />
+              <span className="text-sm font-medium">You are on Test Mode</span>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-sm text-gray-600">
-                Good Evening, {data?.schoolName || "JJ English Medium School"}
-              </div>
-              <div className="relative">
-                <button 
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  <User size={20} />
-                  <span className="text-sm">Profile</span>
-                </button>
-                {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                    <button className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                      <Key size={16} className="mr-3" />
-                      Reset Password
-                    </button>
-                    <button 
-                      onClick={handleLogout}
-                      className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                    >
-                      <LogOut size={16} className="mr-3" />
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
+            <button 
+              onClick={() => setShowTestModeModal(true)}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              Go Live
+            </button>
+          </div>
+        </div>
+
+        {/* Sub Header */}
+        <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
+              Good Evening, {data?.schoolName || "JJ English Medium School"}
+            </div>
+            <div className="relative">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowUserMenu(!showUserMenu);
+                }}
+                className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                <User size={20} />
+                <span className="text-sm">Profile</span>
+              </button>
+              {showUserMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <button className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    <Key size={16} className="mr-3" />
+                    Reset Password
+                  </button>
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                  >
+                    <LogOut size={16} className="mr-3" />
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -273,13 +318,20 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
                   <span className="text-sm font-medium text-yellow-800">Trial Warning</span>
                 </div>
                 <p className="text-sm text-yellow-700">
-                  Your Trial Ends in <span className="font-semibold">29 days</span>
+                  {data?.dashboard?.trialDays ? `Your Trial Ends in ${data.dashboard.trialDays} days` : `Your Trial Ends in ${calculateTrialDays(data?.signupDate)} days`}
                 </p>
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Test Mode Modal */}
+      <TestModeModal 
+        isOpen={showTestModeModal}
+        onClose={() => setShowTestModeModal(false)}
+        data={data}
+      />
     </div>
   );
 }

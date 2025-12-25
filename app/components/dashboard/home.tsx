@@ -19,7 +19,10 @@ export function DashboardHome({ data }: DashboardHomeProps) {
 
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <button 
+          onClick={() => window.location.hash = '#student'}
+          className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow text-left"
+        >
           <div className="flex items-center">
             <div className="p-3 bg-blue-100 rounded-lg">
               <Users className="text-blue-600" size={24} />
@@ -29,9 +32,12 @@ export function DashboardHome({ data }: DashboardHomeProps) {
               <p className="text-gray-600">Manage students</p>
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <button 
+          onClick={() => window.location.hash = '#fees'}
+          className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow text-left"
+        >
           <div className="flex items-center">
             <div className="p-3 bg-green-100 rounded-lg">
               <DollarSign className="text-green-600" size={24} />
@@ -41,9 +47,12 @@ export function DashboardHome({ data }: DashboardHomeProps) {
               <p className="text-gray-600">Track payments</p>
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <button 
+          onClick={() => window.location.hash = '#employee'}
+          className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow text-left"
+        >
           <div className="flex items-center">
             <div className="p-3 bg-purple-100 rounded-lg">
               <UserCheck className="text-purple-600" size={24} />
@@ -53,9 +62,12 @@ export function DashboardHome({ data }: DashboardHomeProps) {
               <p className="text-gray-600">Staff records</p>
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <button 
+          onClick={() => window.location.hash = '#assignments'}
+          className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow text-left"
+        >
           <div className="flex items-center">
             <div className="p-3 bg-orange-100 rounded-lg">
               <BookOpen className="text-orange-600" size={24} />
@@ -65,9 +77,12 @@ export function DashboardHome({ data }: DashboardHomeProps) {
               <p className="text-gray-600">Communications</p>
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <button 
+          onClick={() => window.location.hash = '#progress'}
+          className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow text-left"
+        >
           <div className="flex items-center">
             <div className="p-3 bg-red-100 rounded-lg">
               <BookOpen className="text-red-600" size={24} />
@@ -77,9 +92,12 @@ export function DashboardHome({ data }: DashboardHomeProps) {
               <p className="text-gray-600">Academic progress</p>
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <button 
+          onClick={() => window.location.hash = '#attendance'}
+          className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow text-left"
+        >
           <div className="flex items-center">
             <div className="p-3 bg-indigo-100 rounded-lg">
               <UserCheck className="text-indigo-600" size={24} />
@@ -89,7 +107,7 @@ export function DashboardHome({ data }: DashboardHomeProps) {
               <p className="text-gray-600">Track attendance</p>
             </div>
           </div>
-        </div>
+        </button>
       </div>
 
       {/* Employee Attendance */}

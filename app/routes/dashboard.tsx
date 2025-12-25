@@ -10,6 +10,12 @@ import { StudentManagement } from "../components/dashboard/student";
 import { LockedFeature } from "../components/dashboard/locked";
 import { getContentUrl } from "../utils/config";
 
+const lockedMenuItems = [
+  'admission', 'admission-query', 'notifications', 'assignments', 'birthdays',
+  'canteen', 'certificates', 'hostel', 'library', 'other-charges', 'passout',
+  'progress', 'recharge', 'timetable', 'transport', 'user', 'whatsapp'
+];
+
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Dashboard - Seekio Academic Management" },
@@ -22,6 +28,21 @@ export default function Dashboard() {
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  // Handle hash navigation
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (hash) {
+        setActiveMenu(hash);
+      }
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange(); // Check initial hash
+    
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   useEffect(() => {
     // Check authentication
@@ -87,9 +108,15 @@ export default function Dashboard() {
         return <EmployeeManagement data={dashboardData} />;
       case 'student':
         return <StudentManagement data={dashboardData} />;
+      case 'fees':
+      case 'assignments':
+      case 'progress':
       case 'locked':
-        return <LockedFeature />;
+        return <LockedFeature key={activeMenu} data={dashboardData} />;
       default:
+        if (lockedMenuItems.includes(activeMenu)) {
+          return <LockedFeature key={activeMenu} data={dashboardData} />;
+        }
         return <DashboardHome data={dashboardData} />;
     }
   };
