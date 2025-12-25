@@ -48,6 +48,7 @@ export default function Signup() {
     setStep('contact');
     setLoading(false);
     setShowPassword(false);
+    setErrors({});
     if (tab === 'signup') {
       setContactMethod('email');
     } else {
@@ -86,8 +87,24 @@ export default function Signup() {
 
   const handleSendOTP = async () => {
     const contact = contactMethod === 'mobile' ? mobile : email;
-    if (!contact || (contactMethod === 'mobile' && mobile.length < 10) || !signupData) return;
+    const newErrors: {mobile?: string; email?: string} = {};
     
+    if (contactMethod === 'mobile') {
+      if (!mobile || !validateMobile(mobile)) {
+        newErrors.mobile = 'Please enter a valid 10-digit mobile number';
+      }
+    } else {
+      if (!email || !validateEmail(email)) {
+        newErrors.email = 'Please enter a valid email address';
+      }
+    }
+    
+    if (Object.keys(newErrors).length > 0 || !signupData) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    setErrors({});
     setLoading(true);
     try {
       const endpoint = contactMethod === 'mobile' ? signupData.api.smsOtpEndpoint : signupData.api.emailOtpEndpoint;
@@ -105,7 +122,8 @@ export default function Signup() {
       if (response.ok) {
         setStep('otp');
       } else {
-        alert('Failed to send OTP. Please try again.');
+        const errorKey = contactMethod === 'mobile' ? 'mobile' : 'email';
+        setErrors({[errorKey]: 'Failed to send OTP. Please try again.'});
       }
     } catch (error) {
       console.error('Error sending OTP:', error);
@@ -116,8 +134,21 @@ export default function Signup() {
   };
 
   const handleLogin = async () => {
-    if ((!mobile && !email) || !password || !signupData) return;
+    const newErrors: {email?: string; password?: string} = {};
     
+    if (!email || !validateEmail(email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    if (!password || password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    setErrors({});
     setLoading(true);
     try {
       const response = await fetch(signupData.api.loginEndpoint, {
@@ -126,19 +157,28 @@ export default function Signup() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          identifier: mobile || email,
+          identifier: email,
           password: password
         })
       });
       
       if (response.ok) {
+        const data = await response.json();
+        
+        // Store auth token and user data
+        if (data.token) {
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('user_data', JSON.stringify(data.user));
+        }
+        
         setStep('success');
       } else {
-        alert('Invalid credentials. Please try again.');
+        const errorData = await response.json();
+        setErrors({email: errorData.message || 'Invalid email or password'});
       }
     } catch (error) {
       console.error('Error logging in:', error);
-      alert('Login failed. Please try again.');
+      setErrors({email: 'Login failed. Please try again.'});
     } finally {
       setLoading(false);
     }
@@ -148,10 +188,44 @@ export default function Signup() {
     if (!otp || otp.length < 4) return;
     
     setLoading(true);
-    setTimeout(() => {
-      setStep('success');
+    try {
+      const contact = contactMethod === 'mobile' ? mobile : email;
+      const endpoint = activeTab === 'login' 
+        ? signupData?.api?.verifyLoginOtpEndpoint || signupData?.api?.verifyOtpEndpoint
+        : signupData?.api?.verifyOtpEndpoint;
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          [contactMethod]: contact,
+          otp: otp,
+          action: activeTab // 'login' or 'signup'
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Store auth token if login
+        if (activeTab === 'login' && data.token) {
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('user_data', JSON.stringify(data.user));
+        }
+        
+        setStep('success');
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || 'Invalid OTP. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      alert('Verification failed. Please try again.');
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   if (!dataLoaded) {
@@ -263,14 +337,23 @@ export default function Signup() {
                           onChange={(e) => {
                             if (contactMethod === 'mobile') {
                               setMobile(e.target.value.replace(/\D/g, '').slice(0, 10));
+                              if (errors.mobile) setErrors({...errors, mobile: undefined});
                             } else {
                               setEmail(e.target.value);
+                              if (errors.email) setErrors({...errors, email: undefined});
                             }
                           }}
                           placeholder={contactMethod === 'mobile' ? signupData.signup.steps.contact.mobilePlaceholder : signupData.signup.steps.contact.emailPlaceholder}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className={`block w-full pl-10 pr-3 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ${
+                            (contactMethod === 'mobile' ? errors.mobile : errors.email) ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
+                          }`}
                         />
                       </div>
+                      {(contactMethod === 'mobile' ? errors.mobile : errors.email) && (
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                          {contactMethod === 'mobile' ? errors.mobile : errors.email}
+                        </p>
+                      )}
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {contactMethod === 'mobile' ? signupData.signup.steps.contact.mobileHelp : signupData.signup.steps.contact.emailHelp}
                       </p>
@@ -448,11 +531,19 @@ export default function Signup() {
                         <input
                           type="email"
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            if (errors.email) setErrors({...errors, email: undefined});
+                          }}
                           placeholder="Enter your email address"
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className={`block w-full pl-10 pr-3 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ${
+                            errors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
+                          }`}
                         />
                       </div>
+                      {errors.email && (
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.email}</p>
+                      )}
                     </div>
 
                     <div>
@@ -466,9 +557,14 @@ export default function Signup() {
                         <input
                           type={showPassword ? 'text' : 'password'}
                           value={password}
-                          onChange={(e) => setPassword(e.target.value)}
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                            if (errors.password) setErrors({...errors, password: undefined});
+                          }}
                           placeholder={signupData?.login?.fields?.password?.placeholder || "Enter your password"}
-                          className="block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className={`block w-full pl-10 pr-10 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ${
+                            errors.password ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
+                          }`}
                         />
                         <button
                           type="button"
@@ -482,6 +578,9 @@ export default function Signup() {
                           )}
                         </button>
                       </div>
+                      {errors.password && (
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.password}</p>
+                      )}
                       <div className="text-right mt-1">
                         <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
                           {signupData?.login?.fields?.password?.forgotText || "Forgot password?"}
@@ -520,11 +619,19 @@ export default function Signup() {
                         <input
                           type="tel"
                           value={mobile}
-                          onChange={(e) => setMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                          onChange={(e) => {
+                            setMobile(e.target.value.replace(/\D/g, '').slice(0, 10));
+                            if (errors.mobile) setErrors({...errors, mobile: undefined});
+                          }}
                           placeholder="Enter your mobile number"
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                          className={`block w-full pl-10 pr-3 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ${
+                            errors.mobile ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
+                          }`}
                         />
                       </div>
+                      {errors.mobile && (
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.mobile}</p>
+                      )}
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         We'll send an OTP to verify your number
                       </p>
