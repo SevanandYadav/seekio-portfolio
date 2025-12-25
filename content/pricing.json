@@ -1,0 +1,146 @@
+{
+  "heading": "Pricing Plans",
+  "subheading": "Affordable and scalable solutions for educational institutions of all sizes",
+  "school": {
+    "plans": [
+      {
+        "name": "Basic",
+        "description": "Perfect for small schools with up to 200 students",
+        "price": "2,999",
+        "period": "month",
+        "popular": false,
+        "buttonText": "Get Started",
+        "features": [
+          { "name": "Student Information System", "included": true },
+          { "name": "Attendance Management", "included": true },
+          { "name": "Basic Gradebook", "included": true },
+          { "name": "Parent Portal", "included": true },
+          { "name": "SMS Notifications", "included": true },
+          { "name": "Basic Reports", "included": true },
+          { "name": "Email Support", "included": true },
+          { "name": "Fee Management", "included": false },
+          { "name": "Library Management", "included": false },
+          { "name": "Transport Management", "included": false },
+          { "name": "Advanced Analytics", "included": false },
+          { "name": "Mobile App", "included": false }
+        ]
+      },
+      {
+        "name": "Professional",
+        "description": "Ideal for medium schools with up to 500 students",
+        "price": "4,999",
+        "period": "month",
+        "popular": true,
+        "buttonText": "Most Popular",
+        "features": [
+          { "name": "Student Information System", "included": true },
+          { "name": "Attendance Management", "included": true },
+          { "name": "Advanced Gradebook", "included": true },
+          { "name": "Parent Portal", "included": true },
+          { "name": "SMS & WhatsApp Notifications", "included": true },
+          { "name": "Comprehensive Reports", "included": true },
+          { "name": "Priority Support", "included": true },
+          { "name": "Fee Management", "included": true },
+          { "name": "Library Management", "included": true },
+          { "name": "Transport Management", "included": true },
+          { "name": "Basic Analytics", "included": true },
+          { "name": "Mobile App", "included": false }
+        ]
+      },
+      {
+        "name": "Enterprise",
+        "description": "Complete solution for large schools with 500+ students",
+        "price": "7,999",
+        "period": "month",
+        "popular": false,
+        "buttonText": "Contact Sales",
+        "features": [
+          { "name": "Student Information System", "included": true },
+          { "name": "Attendance Management", "included": true },
+          { "name": "Advanced Gradebook", "included": true },
+          { "name": "Parent Portal", "included": true },
+          { "name": "SMS & WhatsApp Notifications", "included": true },
+          { "name": "Advanced Reports & Analytics", "included": true },
+          { "name": "24/7 Premium Support", "included": true },
+          { "name": "Fee Management", "included": true },
+          { "name": "Library Management", "included": true },
+          { "name": "Transport Management", "included": true },
+          { "name": "Advanced Analytics Dashboard", "included": true },
+          { "name": "Mobile App (iOS & Android)", "included": true }
+        ]
+      }
+    ],
+    "note": "All plans include free setup, training, and data migration. Custom features available on request."
+  },
+  "college": {
+    "plans": [
+      {
+        "name": "Starter",
+        "description": "Perfect for small colleges with up to 1,000 students",
+        "price": "5,999",
+        "period": "month",
+        "popular": false,
+        "buttonText": "Get Started",
+        "features": [
+          { "name": "Student Management System", "included": true },
+          { "name": "Course & Curriculum Management", "included": true },
+          { "name": "Faculty Management", "included": true },
+          { "name": "Basic Examination System", "included": true },
+          { "name": "Student Portal", "included": true },
+          { "name": "Basic Reports", "included": true },
+          { "name": "Email Support", "included": true },
+          { "name": "Fee Management", "included": false },
+          { "name": "Library Management", "included": false },
+          { "name": "Hostel Management", "included": false },
+          { "name": "Advanced Analytics", "included": false },
+          { "name": "Mobile Application", "included": false }
+        ]
+      },
+      {
+        "name": "Professional",
+        "description": "Comprehensive solution for medium colleges up to 3,000 students",
+        "price": "9,999",
+        "period": "month",
+        "popular": true,
+        "buttonText": "Most Popular",
+        "features": [
+          { "name": "Student Management System", "included": true },
+          { "name": "Course & Curriculum Management", "included": true },
+          { "name": "Faculty Management", "included": true },
+          { "name": "Advanced Examination System", "included": true },
+          { "name": "Student & Faculty Portal", "included": true },
+          { "name": "Comprehensive Reports", "included": true },
+          { "name": "Priority Support", "included": true },
+          { "name": "Fee Management", "included": true },
+          { "name": "Library Management", "included": true },
+          { "name": "Hostel Management", "included": true },
+          { "name": "Analytics Dashboard", "included": true },
+          { "name": "Mobile Application", "included": false }
+        ]
+      },
+      {
+        "name": "Enterprise",
+        "description": "Complete solution for large universities with 3,000+ students",
+        "price": "15,999",
+        "period": "month",
+        "popular": false,
+        "buttonText": "Contact Sales",
+        "features": [
+          { "name": "Student Management System", "included": true },
+          { "name": "Course & Curriculum Management", "included": true },
+          { "name": "Faculty Management", "included": true },
+          { "name": "Advanced Examination System", "included": true },
+          { "name": "Student & Faculty Portal", "included": true },
+          { "name": "Advanced Reports & Analytics", "included": true },
+          { "name": "24/7 Premium Support", "included": true },
+          { "name": "Fee Management", "included": true },
+          { "name": "Library Management", "included": true },
+          { "name": "Hostel Management", "included": true },
+          { "name": "Advanced Analytics & BI", "included": true },
+          { "name": "Mobile Application (iOS & Android)", "included": true }
+        ]
+      }
+    ],
+    "note": "All plans include free implementation, staff training, and ongoing technical support. Enterprise customization available."
+  }
+}
