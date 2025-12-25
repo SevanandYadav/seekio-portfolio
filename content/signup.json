@@ -8,23 +8,34 @@
   "signup": {
     "title": "Create Your Account",
     "subtitle": "Get started with Seekio's academic management platform",
+    "contactMethods": {
+      "mobile": "Mobile Number",
+      "email": "Email Address"
+    },
     "steps": {
-      "mobile": {
-        "title": "Mobile Number",
-        "placeholder": "Enter your mobile number",
-        "helpText": "We'll send an OTP via SMS to verify your number",
-        "buttonText": "Send OTP via SMS",
+      "contact": {
+        "title": "Choose Verification Method",
+        "mobileTitle": "Mobile Number",
+        "emailTitle": "Email Address",
+        "mobilePlaceholder": "Enter your mobile number",
+        "emailPlaceholder": "Enter your email address",
+        "mobileHelp": "We'll send an OTP via SMS",
+        "emailHelp": "We'll send an OTP via email",
+        "mobileButton": "Send SMS OTP",
+        "emailButton": "Send Email OTP",
         "loadingText": "Sending OTP...",
         "termsText": "By continuing, you agree to our Terms of Service and Privacy Policy"
       },
       "otp": {
         "title": "Enter OTP",
-        "subtitle": "OTP sent to +91 {mobile}",
-        "helpText": "Check your SMS messages",
+        "mobileSubtitle": "SMS OTP sent to +91 {mobile}",
+        "emailSubtitle": "Email OTP sent to {email}",
+        "mobileHelp": "Check your SMS messages",
+        "emailHelp": "Check your email inbox",
         "placeholder": "Enter 6-digit OTP",
         "buttonText": "Verify & Create Account",
         "loadingText": "Creating account...",
-        "changeMobileText": "Change mobile number",
+        "changeContactText": "Change contact method",
         "resendText": "Resend OTP"
       },
       "success": {
@@ -37,8 +48,12 @@
   "login": {
     "title": "Sign In to Your Account",
     "subtitle": "Welcome back! Please enter your details",
+    "methods": {
+      "password": "Password",
+      "otp": "OTP"
+    },
     "fields": {
-      "mobile": {
+      "contact": {
         "title": "Mobile Number or Email",
         "placeholder": "Enter mobile number or email",
         "helpText": "Use the mobile number or email you registered with"
@@ -49,9 +64,18 @@
         "forgotText": "Forgot password?"
       }
     },
-    "buttonText": "Sign In",
-    "loadingText": "Signing in...",
-    "otpOption": "Or sign in with OTP",
+    "passwordLogin": {
+      "buttonText": "Sign In",
+      "loadingText": "Signing in...",
+      "otpOption": "Or sign in with OTP"
+    },
+    "otpLogin": {
+      "buttonText": "Send OTP",
+      "loadingText": "Sending OTP...",
+      "passwordOption": "Or sign in with password",
+      "verifyButton": "Verify & Sign In",
+      "verifyLoading": "Signing in..."
+    },
     "switchText": "Don't have an account? Create one"
   },
   "features": [
@@ -62,7 +86,7 @@
     },
     {
       "icon": "MessageSquare", 
-      "title": "SMS OTP",
+      "title": "SMS & Email OTP",
       "color": "green"
     },
     {
@@ -72,8 +96,11 @@
     }
   ],
   "api": {
-    "signupEndpoint": "/api/send-sms-otp",
+    "smsOtpEndpoint": "/api/send-sms-otp",
+    "emailOtpEndpoint": "/api/send-email-otp",
     "loginEndpoint": "/api/login",
-    "message": "Your Seekio verification code is: {otp}. Valid for 5 minutes."
+    "smsMessage": "Your Seekio verification code is: {otp}. Valid for 5 minutes.",
+    "emailSubject": "Seekio Verification Code",
+    "emailMessage": "Your Seekio verification code is: {otp}. This code is valid for 5 minutes."
   }
 }
