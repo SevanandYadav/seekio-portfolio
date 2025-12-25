@@ -2,6 +2,7 @@ import type { Route } from "./+types/pricing";
 import { Navbar } from "../components/layout/navbar";
 import { Footer } from "../components/layout/footer";
 import { FloatingContact } from "../components/ui/floating-contact";
+import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -231,32 +232,33 @@ export default function Pricing() {
                         )}
                       </div>
 
-                      <ul className="space-y-2 mb-6 text-sm">
-                        {plan.features.slice(0, 6).map((feature: any, idx: number) => (
+                      <ul className="space-y-2 mb-6 text-sm max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+                        {plan.features.map((feature: any, idx: number) => (
                           <li key={idx} className="flex items-start">
                             {feature.included ? (
-                              <Check size={16} className="text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+                              <div className="w-5 h-5 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
+                                <Check size={12} className="text-green-600 dark:text-green-400" />
+                              </div>
                             ) : (
-                              <X size={16} className="text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                              <div className="w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
+                                <X size={12} className="text-red-600 dark:text-red-400" />
+                              </div>
                             )}
                             <span className={`text-xs ${feature.included ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
                               {feature.name}
                             </span>
                           </li>
                         ))}
-                        {plan.features.length > 6 && (
-                          <li className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                            +{plan.features.length - 6} more features
-                          </li>
-                        )}
                       </ul>
 
-                      <Button 
-                        className="w-full text-sm py-2" 
-                        variant={plan.popular ? "default" : "secondary"}
-                      >
-                        {plan.buttonText}
-                      </Button>
+                      <Link to="/signup" className="block">
+                        <Button 
+                          className="w-full text-sm py-2" 
+                          variant={plan.popular ? "default" : "secondary"}
+                        >
+                          {plan.buttonText}
+                        </Button>
+                      </Link>
                     </div>
                   </Card>
                 </motion.div>
@@ -274,26 +276,38 @@ export default function Pricing() {
                   Compare Features
                 </h3>
                 
-                <div className="bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 dark:from-gray-800 dark:via-slate-800 dark:to-gray-900 rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gradient-to-r from-slate-100 to-gray-100 dark:from-slate-700 dark:to-gray-700 sticky top-20 z-50 transition-all duration-300 hover:shadow-lg">
-                        <tr>
-                          <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white">Features</th>
-                          <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white hover:text-green-600 transition-colors">Basic</th>
-                          <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white hover:text-blue-600 transition-colors">Professional</th>
-                          <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white hover:text-purple-600 transition-colors">Enterprise</th>
-                          <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white hover:text-orange-600 transition-colors">Custom</th>
-                        </tr>
-                        <tr className="bg-gradient-to-r from-slate-200 to-gray-200 dark:from-slate-600 dark:to-gray-600 sticky top-36 z-40">
-                          <td className="px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300">Pricing</td>
-                          <td className="px-6 py-3 text-center text-sm font-bold text-green-600">Free</td>
-                          <td className="px-6 py-3 text-center text-sm font-bold text-blue-600">₹3,200/month</td>
-                          <td className="px-6 py-3 text-center text-sm font-bold text-purple-600">₹35/student/month</td>
-                          <td className="px-6 py-3 text-center text-sm font-bold text-orange-600">Contact us</td>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                <div className="relative">
+                  {/* Sticky Header Container */}
+                  <div className="sticky top-16 z-20 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg border-b border-gray-200 dark:border-gray-700">
+                    <div className="bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 dark:from-gray-800 dark:via-slate-800 dark:to-gray-900 rounded-t-xl border border-gray-200 dark:border-gray-700">
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="bg-gradient-to-r from-slate-100 to-gray-100 dark:from-slate-700 dark:to-gray-700">
+                              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-white min-w-48">Features</th>
+                              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white hover:text-green-600 transition-colors min-w-32">Basic</th>
+                              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white hover:text-blue-600 transition-colors min-w-32">Professional</th>
+                              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white hover:text-purple-600 transition-colors min-w-32">Enterprise</th>
+                              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white hover:text-orange-600 transition-colors min-w-32">Custom</th>
+                            </tr>
+                            <tr className="bg-gradient-to-r from-slate-200 to-gray-200 dark:from-slate-600 dark:to-gray-600">
+                              <td className="px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300">Pricing</td>
+                              <td className="px-6 py-3 text-center text-sm font-bold text-green-600">Free</td>
+                              <td className="px-6 py-3 text-center text-sm font-bold text-blue-600">₹3,200/month</td>
+                              <td className="px-6 py-3 text-center text-sm font-bold text-purple-600">₹35/student/month</td>
+                              <td className="px-6 py-3 text-center text-sm font-bold text-orange-600">Contact us</td>
+                            </tr>
+                          </thead>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Scrollable Table Body */}
+                  <div className="bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 dark:from-gray-800 dark:via-slate-800 dark:to-gray-900 rounded-b-xl shadow-lg border-x border-b border-gray-200 dark:border-gray-700">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                         {/* CRM Features - Scheduling */}
                         <tr className="bg-blue-50 dark:bg-blue-900/20">
                           <td colSpan={5} className="px-6 py-3 text-sm font-bold text-blue-800 dark:text-blue-200 uppercase tracking-wide">
@@ -301,11 +315,27 @@ export default function Pricing() {
                           </td>
                         </tr>
                         <tr>
-                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">Class Scheduling</td>
-                          <td className="px-6 py-4 text-center"><Check size={16} className="text-green-600 mx-auto" /></td>
-                          <td className="px-6 py-4 text-center"><Check size={16} className="text-green-600 mx-auto" /></td>
-                          <td className="px-6 py-4 text-center"><Check size={16} className="text-green-600 mx-auto" /></td>
-                          <td className="px-6 py-4 text-center"><Check size={16} className="text-green-600 mx-auto" /></td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-white min-w-48">Class Scheduling</td>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                              <Check size={14} className="text-green-600 dark:text-green-400" />
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                              <Check size={14} className="text-green-600 dark:text-green-400" />
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                              <Check size={14} className="text-green-600 dark:text-green-400" />
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                              <Check size={14} className="text-green-600 dark:text-green-400" />
+                            </div>
+                          </td>
                         </tr>
                         <tr className="bg-gray-50 dark:bg-gray-800">
                           <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">Teacher Management</td>
@@ -322,11 +352,27 @@ export default function Pricing() {
                           <td className="px-6 py-4 text-center"><Check size={16} className="text-green-600 mx-auto" /></td>
                         </tr>
                         <tr className="bg-gray-50 dark:bg-gray-800">
-                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">Attendance Tracking</td>
-                          <td className="px-6 py-4 text-center"><X size={16} className="text-red-500 mx-auto" /></td>
-                          <td className="px-6 py-4 text-center"><Check size={16} className="text-green-600 mx-auto" /></td>
-                          <td className="px-6 py-4 text-center"><Check size={16} className="text-green-600 mx-auto" /></td>
-                          <td className="px-6 py-4 text-center"><Check size={16} className="text-green-600 mx-auto" /></td>
+                          <td className="px-6 py-4 text-sm text-gray-900 dark:text-white min-w-48">Attendance Tracking</td>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <div className="w-6 h-6 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto">
+                              <X size={14} className="text-red-600 dark:text-red-400" />
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                              <Check size={14} className="text-green-600 dark:text-green-400" />
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                              <Check size={14} className="text-green-600 dark:text-green-400" />
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <div className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                              <Check size={14} className="text-green-600 dark:text-green-400" />
+                            </div>
+                          </td>
                         </tr>
                         <tr>
                           <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">Parent Communication</td>
@@ -408,22 +454,31 @@ export default function Pricing() {
                         
                         {/* Action Row */}
                         <tr className="bg-gray-100 dark:bg-gray-700">
-                          <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">Get Started</td>
-                          <td className="px-6 py-4 text-center">
-                            <Button size="sm" className="text-xs">Get Started Free</Button>
+                          <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white min-w-48">Get Started</td>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <Link to="/signup">
+                              <Button size="sm" className="text-xs">Get Started Free</Button>
+                            </Link>
                           </td>
-                          <td className="px-6 py-4 text-center">
-                            <Button size="sm" className="text-xs">Try for Free</Button>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <Link to="/signup">
+                              <Button size="sm" className="text-xs">Try for Free</Button>
+                            </Link>
                           </td>
-                          <td className="px-6 py-4 text-center">
-                            <Button size="sm" variant="secondary" className="text-xs">Contact Sales</Button>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <Link to="/signup">
+                              <Button size="sm" variant="secondary" className="text-xs">Contact Sales</Button>
+                            </Link>
                           </td>
-                          <td className="px-6 py-4 text-center">
-                            <Button size="sm" variant="secondary" className="text-xs">Contact Sales</Button>
+                          <td className="px-6 py-4 text-center min-w-32">
+                            <Link to="/signup">
+                              <Button size="sm" variant="secondary" className="text-xs">Contact Sales</Button>
+                            </Link>
                           </td>
                         </tr>
-                      </tbody>
-                    </table>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </motion.div>

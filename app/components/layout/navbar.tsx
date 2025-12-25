@@ -1,27 +1,33 @@
 import { Link } from "react-router";
 import { ASSETS } from "../../utils/config";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const links = [
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Services", path: "/services" },
+  { name: "Portfolio", path: "/portfolio" },
+  { name: "Pricing", path: "/pricing" },
+  { name: "Contact", path: "/contact" }
+];
 
-  const links = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Services", path: "/services" },
-    { name: "Portfolio", path: "/portfolio" },
-    { name: "Pricing", path: "/pricing" },
-    { name: "Contact", path: "/contact" }
-  ];
+export const Navbar = memo(() => {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 w-full bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <img src={ASSETS.logo} alt="Seekio" className="h-10 w-auto" />
+            <img 
+              src={ASSETS.logo} 
+              alt="Seekio" 
+              className="h-10 w-auto" 
+              loading="eager"
+              decoding="async"
+            />
             <span className="text-xl font-bold text-gray-900 dark:text-white">Seekio Solutions</span>
           </Link>
 
@@ -71,4 +77,4 @@ export const Navbar = () => {
       </AnimatePresence>
     </nav>
   );
-};
+});
