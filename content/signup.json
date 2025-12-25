@@ -1,0 +1,50 @@
+{
+  "title": "Create Your Account",
+  "subtitle": "Get started with Seekio's academic management platform",
+  "steps": {
+    "mobile": {
+      "title": "Mobile Number",
+      "placeholder": "Enter your mobile number",
+      "helpText": "We'll send an OTP via SMS (Demo mode - no actual SMS sent)",
+      "buttonText": "Send OTP via SMS",
+      "loadingText": "Sending OTP...",
+      "termsText": "By continuing, you agree to our Terms of Service and Privacy Policy"
+    },
+    "otp": {
+      "title": "Enter OTP",
+      "subtitle": "OTP sent to +91 {mobile}",
+      "helpText": "Check your SMS messages",
+      "placeholder": "Enter 6-digit OTP",
+      "buttonText": "Verify & Continue",
+      "loadingText": "Verifying...",
+      "changeMobileText": "Change mobile number",
+      "resendText": "Resend OTP"
+    },
+    "success": {
+      "title": "Account Created Successfully!",
+      "subtitle": "Welcome to Seekio! Your account has been verified and is ready to use.",
+      "buttonText": "Continue to Dashboard"
+    }
+  },
+  "features": [
+    {
+      "icon": "Shield",
+      "title": "Secure & Safe",
+      "color": "blue"
+    },
+    {
+      "icon": "MessageSquare", 
+      "title": "SMS OTP",
+      "color": "green"
+    },
+    {
+      "icon": "CheckCircle",
+      "title": "Quick Setup", 
+      "color": "purple"
+    }
+  ],
+  "api": {
+    "endpoint": "/api/send-sms-otp",
+    "message": "Your Seekio verification code is: {otp}. Valid for 5 minutes."
+  }
+}
