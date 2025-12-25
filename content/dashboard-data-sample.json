@@ -22,6 +22,14 @@
     "notMarked": 0,
     "total": 100
   },
+   "testModeModal": {
+    "title": "You are on Test Mode",
+    "description": "You are currently using the platform in Test Mode. The content you see here is dummy data added to help you explore and understand the basic functionalities.",
+    "warning": "Please note that any changes made in this mode will not affect real data. To remove the dummy data, and create new data or make actual changes, you will need to switch to Live Mode.",
+    "note": "Note: Once you go live, you will be logged out and you will have to log back in.",
+    "cancelButton": "Cancel",
+    "confirmButton": "I understand this is Test Mode, and I'm ready to switch to Live Mode to work with real data."
+  },
   "employees": [
     {
       "name": "Demo Employee 1",
