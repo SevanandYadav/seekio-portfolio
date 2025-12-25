@@ -104,7 +104,7 @@
     "emailMessage": "Your Seekio verification code is: {otp}. This code is valid for 5 minutes."
   },
   "testCredentials": {
-    "email": "sevanandyadava@gmail.com",
+    "email": "sevanandyadav@gmail.com",
     "password": "test123",
     "mobile": "7843027952",
     "otp": "123456"
