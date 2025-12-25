@@ -104,6 +104,17 @@ export default function Signup() {
       return;
     }
     
+    // Test credentials bypass
+    if ((contactMethod === 'mobile' && mobile === signupData?.testCredentials?.mobile) || 
+        (contactMethod === 'email' && email === signupData?.testCredentials?.email)) {
+      setLoading(true);
+      setTimeout(() => {
+        setStep('otp');
+        setLoading(false);
+      }, 1000);
+      return;
+    }
+    
     setErrors({});
     setLoading(true);
     try {
@@ -148,6 +159,29 @@ export default function Signup() {
       return;
     }
     
+    // Test credentials bypass
+    const testEmail = signupData?.testCredentials?.email;
+    const testPassword = signupData?.testCredentials?.password;
+    
+    if (testEmail && testPassword && email === testEmail && password === testPassword) {
+      setLoading(true);
+      setTimeout(() => {
+        localStorage.setItem('auth_token', 'test_token_123');
+        localStorage.setItem('user_data', JSON.stringify({id: 1, email: testEmail, name: 'Test User'}));
+        setStep('success');
+        setLoading(false);
+      }, 1000);
+      return;
+    }
+    
+    // Check if API endpoint exists before calling
+    if (!signupData?.api?.loginEndpoint) {
+      console.error('No login endpoint configured');
+      setErrors({email: 'Login service not configured'});
+      return;
+    }
+    
+
     setErrors({});
     setLoading(true);
     try {
@@ -186,6 +220,25 @@ export default function Signup() {
 
   const handleVerifyOTP = async () => {
     if (!otp || otp.length < 4) return;
+    
+    // Test OTP bypass
+    if (otp === signupData?.testCredentials?.otp) {
+      setLoading(true);
+      setTimeout(() => {
+        if (activeTab === 'login') {
+          localStorage.setItem('auth_token', 'test_token_otp_123');
+          localStorage.setItem('user_data', JSON.stringify({
+            id: 1, 
+            mobile: mobile || undefined,
+            email: email || undefined,
+            name: 'Test User'
+          }));
+        }
+        setStep('success');
+        setLoading(false);
+      }, 1000);
+      return;
+    }
     
     setLoading(true);
     try {
