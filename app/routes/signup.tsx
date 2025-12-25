@@ -278,7 +278,7 @@ export default function Signup() {
         }, 1000);
         return;
       } else {
-        alert('Invalid OTP. Please try again.');
+        setErrors({email: 'Invalid OTP. Please try again.'});
         return;
       }
     }
@@ -335,11 +335,11 @@ export default function Signup() {
         setStep('success');
       } else {
         const errorData = await response.json();
-        alert(errorData.message || 'Invalid OTP. Please try again.');
+        setErrors({email: errorData.message || 'Invalid OTP. Please try again.'});
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      alert('Verification failed. Please try again.');
+      setErrors({email: 'Verification failed. Please try again.'});
     } finally {
       setLoading(false);
     }
@@ -588,11 +588,19 @@ export default function Signup() {
                       <input
                         type="text"
                         value={otp}
-                        onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                        onChange={(e) => {
+                          setOtp(e.target.value.replace(/\D/g, '').slice(0, 6));
+                          if (errors.email) setErrors({...errors, email: undefined});
+                        }}
                         placeholder={signupData.signup.steps.otp.placeholder}
-                        className="block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-center text-lg tracking-widest"
+                        className={`block w-full px-3 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-center text-lg tracking-widest ${
+                          errors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
+                        }`}
                         maxLength={6}
                       />
+                      {errors.email && (
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.email}</p>
+                      )}
                     </div>
 
                     <Button
