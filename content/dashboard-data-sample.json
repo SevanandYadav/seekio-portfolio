@@ -1,0 +1,214 @@
+{
+  "schoolName": "JJ English Medium School",
+  "academicYear": "2024-2025",
+  "dashboard": {
+    "trialDays": 29,
+    "stats": {
+      "totalStudents": 150,
+      "totalEmployees": 25,
+      "totalClasses": 12,
+      "totalSections": 24
+    }
+  },
+  "communication": {
+    "sms": 200,
+    "whatsapp": 0,
+    "email": 0
+  },
+  "attendance": {
+    "present": 90,
+    "absent": 8,
+    "leave": 2,
+    "notMarked": 0,
+    "total": 100
+  },
+  "employees": [
+    {
+      "name": "Demo Employee 1",
+      "mobile": "9000000501",
+      "gender": "male",
+      "email": "noemail1@mail.com",
+      "empCode": "1071",
+      "department": "Administrative",
+      "designation": "Administrator"
+    },
+    {
+      "name": "Demo Employee 2",
+      "mobile": "9000000502",
+      "gender": "male",
+      "email": "noemail2@mail.com",
+      "empCode": "1072",
+      "department": "Administrative",
+      "designation": "IT Head"
+    },
+    {
+      "name": "Demo Employee 3",
+      "mobile": "9000000503",
+      "gender": "female",
+      "email": "noemail3@mail.com",
+      "empCode": "1073",
+      "department": "Academics",
+      "designation": "Asst. Teacher"
+    },
+    {
+      "name": "Demo Employee 4",
+      "mobile": "9000000504",
+      "gender": "female",
+      "email": "noemail4@mail.com",
+      "empCode": "1074",
+      "department": "Academics",
+      "designation": "Asst. Teacher"
+    },
+    {
+      "name": "Demo Employee 5",
+      "mobile": "9000000505",
+      "gender": "female",
+      "email": "noemail5@mail.com",
+      "empCode": "1075",
+      "department": "Academics",
+      "designation": "Asst. Teacher"
+    },
+    {
+      "name": "Demo Employee 6",
+      "mobile": "9000000506",
+      "gender": "male",
+      "email": "noemail6@mail.com",
+      "empCode": "1076",
+      "department": "Finance",
+      "designation": "Accountant"
+    },
+    {
+      "name": "Demo Employee 7",
+      "mobile": "9000000507",
+      "gender": "female",
+      "email": "noemail7@mail.com",
+      "empCode": "1077",
+      "department": "Front Office",
+      "designation": "Receptionist"
+    }
+  ],
+  "students": [
+    {
+      "name": "Demo Student 1",
+      "class": "2",
+      "section": "A",
+      "rollNo": "1",
+      "fatherName": "Demo Father 1",
+      "mobile": "9999999990"
+    },
+    {
+      "name": "Demo Student 2",
+      "class": "2",
+      "section": "A",
+      "rollNo": "2",
+      "fatherName": "Demo Father 2",
+      "mobile": "9999999993"
+    },
+    {
+      "name": "Demo Student 3",
+      "class": "2",
+      "section": "A",
+      "rollNo": "3",
+      "fatherName": "Demo Father 3",
+      "mobile": "9999999996"
+    },
+    {
+      "name": "Demo Student 4",
+      "class": "2",
+      "section": "A",
+      "rollNo": "4",
+      "fatherName": "Demo Father 4",
+      "mobile": "9999999999"
+    },
+    {
+      "name": "Demo Student 5",
+      "class": "2",
+      "section": "A",
+      "rollNo": "5",
+      "fatherName": "Demo Father 5",
+      "mobile": "10000000002"
+    },
+    {
+      "name": "Demo Student 6",
+      "class": "2",
+      "section": "A",
+      "rollNo": "6",
+      "fatherName": "Demo Father 6",
+      "mobile": "10000000005"
+    }
+  ],
+  "setup": {
+    "classes": [
+      {
+        "class": "8",
+        "sections": "A, B, C, 3",
+        "reportCardType": "Secondary"
+      },
+      {
+        "class": "7",
+        "sections": "1, 2, 3, 4",
+        "reportCardType": "Primary"
+      },
+      {
+        "class": "5",
+        "sections": "A, B, C",
+        "reportCardType": "Primary"
+      },
+      {
+        "class": "B.Tech",
+        "sections": "1, 2, 3, 4, 5, 6, 7, 8",
+        "reportCardType": "Secondary"
+      },
+      {
+        "class": "M.Tech",
+        "sections": "1, 2, 3, 4",
+        "reportCardType": "Pre Primary"
+      },
+      {
+        "class": "P.hd",
+        "sections": "1, 2, 3, 4",
+        "reportCardType": "Pre Primary"
+      },
+      {
+        "class": "BCA",
+        "sections": "1, 2, 3, 4, 5, 6",
+        "reportCardType": "Primary"
+      },
+      {
+        "class": "BBA",
+        "sections": "1, 2, 3, 4, 5, 6",
+        "reportCardType": "Pre Primary"
+      },
+      {
+        "class": "M.com",
+        "sections": "1, 2, 3, 4, 5, 6",
+        "reportCardType": "Pre Primary"
+      },
+      {
+        "class": "MCA",
+        "sections": "1, 2, 3, 4",
+        "reportCardType": "Sr. Secondary"
+      },
+      {
+        "class": "BA Honours",
+        "sections": "1, 2, 3, 4, 5, 6, 7, 8",
+        "reportCardType": "Primary"
+      },
+      {
+        "class": "KEI_BMLT",
+        "sections": "1, 2, 3, 4, 5, 6, 7, 8",
+        "reportCardType": "Sr. Secondary"
+      },
+      {
+        "class": "A1",
+        "sections": "1, 2",
+        "reportCardType": "Secondary"
+      },
+      {
+        "class": "BHM",
+        "sections": "1, 2, 3, 4, 5, 6",
+        "reportCardType": "Primary"
+      }
+    ]
+  }
+}
