@@ -43,7 +43,7 @@ export default function Dashboard() {
       }
     }
     
-    fetch(getContentUrl('/dashboard.json'))
+    fetch(getContentUrl('/dashboard-data-sample.json'))
       .then(res => {
         console.log('Dashboard fetch response:', res.status, res.statusText);
         return res.json();
@@ -55,17 +55,8 @@ export default function Dashboard() {
       })
       .catch(error => {
         console.error('Failed to load dashboard data:', error);
-        console.log('Trying to load from public folder as fallback...');
-        // Fallback to local file
-        fetch('/dashboard-data-sample.json')
-          .then(res => res.json())
-          .then(data => {
-            console.log('Fallback data loaded:', data);
-            setDashboardData(data);
-          })
-          .catch(fallbackError => {
-            console.error('Fallback also failed:', fallbackError);
-          });
+        // Data branch should have dashboard.json with this content
+        console.log('Make sure dashboard.json exists in your data branch content folder');
       })
       .finally(() => {
         setLoading(false);
