@@ -168,8 +168,7 @@ export default function Signup() {
       setTimeout(() => {
         localStorage.setItem('auth_token', 'test_token_123');
         localStorage.setItem('user_data', JSON.stringify({id: 1, email: testEmail, name: 'Test User'}));
-        setStep('success');
-        setLoading(false);
+        window.location.href = '/dashboard';
       }, 1000);
       return;
     }
@@ -233,9 +232,11 @@ export default function Signup() {
             email: email || undefined,
             name: 'Test User'
           }));
+          window.location.href = '/dashboard';
+        } else {
+          setStep('success');
+          setLoading(false);
         }
-        setStep('success');
-        setLoading(false);
       }, 1000);
       return;
     }
@@ -531,9 +532,12 @@ export default function Signup() {
                       </p>
                     </div>
 
-                    <Button className="w-full py-3 text-sm font-semibold">
+                    <button 
+                      onClick={() => window.location.href = '/dashboard'}
+                      className="w-full py-3 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors"
+                    >
                       {signupData.signup.steps.success.buttonText}
-                    </Button>
+                    </button>
                   </motion.div>
                 )}
               </>
