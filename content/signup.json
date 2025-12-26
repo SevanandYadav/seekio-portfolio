@@ -107,6 +107,7 @@
     "email": "sevanandyadav@gmail.com",
     "password": "test123",
     "mobile": "7843027952",
-    "otp": "123456"
+    "otp": "123456",
+    "isLive": "true"
   }
 }
