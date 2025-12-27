@@ -108,6 +108,12 @@
     "password": "test123",
     "mobile": "7843027952",
     "otp": "123456",
-    "isLive": false
+    "isLive": false,
+    "subscription": {
+      "level": 0,
+      "planName": "Free Trial",
+      "startDate": "2025-12-01T00:00:00.000Z",
+      "endDate": "2025-12-31T00:00:00.000Z"
+    }
   }
 }
