@@ -206,41 +206,21 @@ export default function Signup() {
       return;
     }
     
-    // Check cached trial credentials first
-    const cachedCreds = localStorage.getItem('trial_credentials');
-    if (cachedCreds) {
-      try {
-        const trialCreds = JSON.parse(cachedCreds);
-        if (trialCreds.isSessionEnabledTillBE && 
-            email === trialCreds.email && 
-            password === trialCreds.password) {
-          setLoading(true);
-          setTimeout(() => {
-            localStorage.setItem('auth_token', 'trial_token_' + Date.now());
-            localStorage.setItem('user_data', JSON.stringify({
-              id: 1, 
-              email: trialCreds.email, 
-              name: trialCreds.instituteName,
-              isTrial: true
-            }));
-            window.location.href = '/dashboard';
-          }, 1000);
-          return;
-        }
-      } catch (e) {
-        console.warn('Failed to parse cached credentials');
-      }
-    }
-    
     // Test credentials bypass
     const testEmail = signupData?.testCredentials?.email;
     const testPassword = signupData?.testCredentials?.password;
+    const testIsLive = signupData?.testCredentials?.isLive === "true";
     
     if (testEmail && testPassword && email === testEmail && password === testPassword) {
       setLoading(true);
       setTimeout(() => {
-        localStorage.setItem('auth_token', 'test_token_123');
-        localStorage.setItem('user_data', JSON.stringify({id: 1, email: testEmail, name: 'Test User'}));
+        localStorage.setItem('auth_token', testIsLive ? 'live_token_123' : 'test_token_123');
+        localStorage.setItem('user_data', JSON.stringify({
+          id: 1, 
+          email: testEmail, 
+          name: 'Test User',
+          isLive: testIsLive
+        }));
         window.location.href = '/dashboard';
       }, 1000);
       return;

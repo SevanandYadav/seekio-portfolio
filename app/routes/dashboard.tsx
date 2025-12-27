@@ -8,6 +8,7 @@ import { AttendanceManagement } from "../components/dashboard/attendance";
 import { EmployeeManagement } from "../components/dashboard/employee";
 import { StudentManagement } from "../components/dashboard/student";
 import { LockedFeature } from "../components/dashboard/locked";
+import { ProfilePage } from "../components/dashboard/profile-page";
 import { getContentUrl } from "../utils/config";
 
 const lockedMenuItems = [
@@ -53,7 +54,72 @@ export default function Dashboard() {
     }
     setIsAuthenticated(true);
 
-    // Load dashboard data
+    // Fetch fresh user data to check live mode status
+    const userData = localStorage.getItem('user_data');
+    if (userData) {
+      const user = JSON.parse(userData);
+      const email = user.email;
+      
+      // Fetch fresh credentials to get current isLive status
+      fetch(getContentUrl('/signup.json') + '?v=' + Math.random())
+        .then(res => res.json())
+        .then(data => {
+          const userCred = data.testCredentials;
+          if (userCred && userCred.email === email) {
+            // Update cached user data with fresh isLive status (parse string to boolean)
+            const isLiveStatus = userCred.isLive === 'true' || userCred.isLive === true;
+            const updatedUser = { ...user, isLive: isLiveStatus };
+            localStorage.setItem('user_data', JSON.stringify(updatedUser));
+            
+            if (isLiveStatus) {
+              // In live mode, show empty data structure
+              const emptyData = {
+                schoolName: "Your School Name",
+                academicYear: "2024-2025",
+                dashboard: { trialDays: 0, stats: { students: 0, employees: 0, classes: 0 } },
+                communication: { sms: 0, whatsapp: 0, email: 0 },
+                attendance: { present: 0, absent: 0, leave: 0, notMarked: 0, total: 0 },
+                employees: [],
+                students: [],
+                setup: { classes: [] }
+              };
+              setDashboardData(emptyData);
+              setLoading(false);
+              return;
+            }
+          }
+          
+          // Load test mode data
+          loadTestModeData();
+        })
+        .catch(error => {
+          console.error('Failed to fetch fresh credentials:', error);
+          // Fallback to cached data
+          const isLiveMode = user.isLive;
+          if (isLiveMode) {
+            const emptyData = {
+              schoolName: "Your School Name",
+              academicYear: "2024-2025",
+              dashboard: { trialDays: 0, stats: { students: 0, employees: 0, classes: 0 } },
+              communication: { sms: 0, whatsapp: 0, email: 0 },
+              attendance: { present: 0, absent: 0, leave: 0, notMarked: 0, total: 0 },
+              employees: [],
+              students: [],
+              setup: { classes: [] }
+            };
+            setDashboardData(emptyData);
+            setLoading(false);
+            return;
+          }
+          loadTestModeData();
+        });
+    } else {
+      loadTestModeData();
+    }
+  }, []);
+
+  const loadTestModeData = () => {
+    // Load dashboard data for test mode
     const cachedData = sessionStorage.getItem('dashboard-data');
     if (cachedData) {
       try {
@@ -76,13 +142,12 @@ export default function Dashboard() {
       })
       .catch(error => {
         console.error('Failed to load dashboard data:', error);
-        // Data branch should have dashboard.json with this content
         console.log('Make sure dashboard.json exists in your data branch content folder');
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  };
 
   if (loading) {
     return (
@@ -97,6 +162,9 @@ export default function Dashboard() {
   }
 
   const renderContent = () => {
+    const userData = localStorage.getItem('user_data');
+    const isLiveMode = userData && JSON.parse(userData).isLive;
+    
     switch (activeMenu) {
       case 'dashboard':
         return <DashboardHome data={dashboardData} />;
@@ -108,14 +176,16 @@ export default function Dashboard() {
         return <EmployeeManagement data={dashboardData} />;
       case 'student':
         return <StudentManagement data={dashboardData} />;
+      case 'profile':
+        return <ProfilePage data={dashboardData} />;
       case 'fees':
       case 'assignments':
       case 'progress':
       case 'locked':
-        return <LockedFeature key={activeMenu} data={dashboardData} />;
+        return isLiveMode ? <DashboardHome data={dashboardData} /> : <LockedFeature key={activeMenu} data={dashboardData} />;
       default:
         if (lockedMenuItems.includes(activeMenu)) {
-          return <LockedFeature key={activeMenu} data={dashboardData} />;
+          return isLiveMode ? <DashboardHome data={dashboardData} /> : <LockedFeature key={activeMenu} data={dashboardData} />;
         }
         return <DashboardHome data={dashboardData} />;
     }

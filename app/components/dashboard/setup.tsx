@@ -10,10 +10,57 @@ export function Setup({ data }: SetupProps) {
   const classes = data?.setup?.classes || [];
   const [showTestModeModal, setShowTestModeModal] = useState(false);
   const [activeTab, setActiveTab] = useState('setup');
+  const [liveClasses, setLiveClasses] = useState<any[]>([]);
+  const [newClass, setNewClass] = useState({ class: '', sections: '', reportCardType: '' });
   
-  console.log('Setup component data:', data);
-  console.log('Classes array:', classes);
-  console.log('Classes length:', classes.length);
+  // Check if user is in live mode
+  const userData = localStorage.getItem('user_data');
+  const isLiveMode = userData && JSON.parse(userData).isLive;
+  
+  const handleSaveClass = () => {
+    if (isLiveMode) {
+      // Save to cache in live mode
+      const updatedClasses = [...liveClasses, { ...newClass, id: Date.now() }];
+      setLiveClasses(updatedClasses);
+      localStorage.setItem('live_classes', JSON.stringify(updatedClasses));
+      setNewClass({ class: '', sections: '', reportCardType: '' });
+    } else {
+      // Show test mode modal
+      setShowTestModeModal(true);
+    }
+  };
+  
+  const handleEditClass = (index: number) => {
+    if (isLiveMode) {
+      // Allow editing in live mode
+      console.log('Edit class:', index);
+    } else {
+      setShowTestModeModal(true);
+    }
+  };
+  
+  const handleDeleteClass = (index: number) => {
+    if (isLiveMode) {
+      // Allow deletion in live mode
+      const updatedClasses = liveClasses.filter((_, i) => i !== index);
+      setLiveClasses(updatedClasses);
+      localStorage.setItem('live_classes', JSON.stringify(updatedClasses));
+    } else {
+      setShowTestModeModal(true);
+    }
+  };
+  
+  // Load live classes from cache on component mount
+  useState(() => {
+    if (isLiveMode) {
+      const cachedClasses = localStorage.getItem('live_classes');
+      if (cachedClasses) {
+        setLiveClasses(JSON.parse(cachedClasses));
+      }
+    }
+  });
+  
+  const displayClasses = isLiveMode ? liveClasses : classes;
 
   return (
     <div className="space-y-6">
@@ -97,18 +144,24 @@ export function Setup({ data }: SetupProps) {
                   <tr className="border-b border-gray-100 bg-blue-50">
                     <td className="py-3 px-4 text-gray-900">-</td>
                     <td className="py-3 px-4">
-                      <select className="w-full px-2 py-1 border border-gray-300 rounded text-sm">
-                        <option>Select...</option>
-                        <option>Pre Primary</option>
-                        <option>Primary</option>
-                        <option>Secondary</option>
-                        <option>Sr. Secondary</option>
+                      <select 
+                        value={newClass.class}
+                        onChange={(e) => setNewClass({...newClass, class: e.target.value})}
+                        className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                      >
+                        <option value="">Select...</option>
+                        <option value="Pre Primary">Pre Primary</option>
+                        <option value="Primary">Primary</option>
+                        <option value="Secondary">Secondary</option>
+                        <option value="Sr. Secondary">Sr. Secondary</option>
                       </select>
                     </td>
                     <td className="py-3 px-4">
                       <input 
                         type="text" 
                         placeholder="eg. LKG" 
+                        value={newClass.sections}
+                        onChange={(e) => setNewClass({...newClass, sections: e.target.value})}
                         className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       />
                     </td>
@@ -116,26 +169,28 @@ export function Setup({ data }: SetupProps) {
                       <input 
                         type="text" 
                         placeholder="eg A,B,C,D,E,F" 
+                        value={newClass.reportCardType}
+                        onChange={(e) => setNewClass({...newClass, reportCardType: e.target.value})}
                         className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       />
                     </td>
                     <td className="py-3 px-4">
                       <button 
-                        onClick={() => setShowTestModeModal(true)}
+                        onClick={handleSaveClass}
                         className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
                       >
                         Save
                       </button>
                     </td>
                   </tr>
-                  {classes.length === 0 ? (
+                  {displayClasses.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="py-8 px-4 text-center text-gray-500">
-                        No classes found. Check console for data loading issues.
+                        {isLiveMode ? 'No classes added yet. Add your first class above.' : 'No classes found. Check console for data loading issues.'}
                       </td>
                     </tr>
                   ) : (
-                    classes.map((classItem: any, index: number) => (
+                    displayClasses.map((classItem: any, index: number) => (
                       <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
                         <td className="py-3 px-4 text-gray-900">{index + 1}</td>
                         <td className="py-3 px-4 text-gray-900 font-medium">{classItem.class}</td>
@@ -153,13 +208,13 @@ export function Setup({ data }: SetupProps) {
                         <td className="py-3 px-4">
                           <div className="flex items-center space-x-2">
                             <button 
-                              onClick={() => setShowTestModeModal(true)}
+                              onClick={() => handleEditClass(index)}
                               className="p-1 text-blue-600 hover:bg-blue-50 rounded"
                             >
                               <Edit size={16} />
                             </button>
                             <button 
-                              onClick={() => setShowTestModeModal(true)}
+                              onClick={() => handleDeleteClass(index)}
                               className="p-1 text-red-600 hover:bg-red-50 rounded"
                             >
                               <Trash2 size={16} />

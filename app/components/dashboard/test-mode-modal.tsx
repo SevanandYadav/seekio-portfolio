@@ -14,6 +14,23 @@ export function TestModeModal({ isOpen, onClose, data }: TestModeModalProps) {
   const handleGoLive = () => {
     setIsGoingLive(true);
     
+    // Create live user profile from cached trial credentials
+    const cachedCreds = localStorage.getItem('trial_credentials');
+    if (cachedCreds) {
+      try {
+        const trialCreds = JSON.parse(cachedCreds);
+        const liveProfile = {
+          ...trialCreds,
+          isLiveMode: true,
+          isSessionEnabledTillBE: true,
+          goLiveDate: new Date().toISOString()
+        };
+        localStorage.setItem('live_profile', JSON.stringify(liveProfile));
+      } catch (e) {
+        console.warn('Failed to create live profile');
+      }
+    }
+    
     setTimeout(() => {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
