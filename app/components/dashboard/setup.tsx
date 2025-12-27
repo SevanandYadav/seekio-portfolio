@@ -72,22 +72,52 @@ export function Setup({ data }: SetupProps) {
       </div>
 
       <div className="bg-white rounded-lg shadow">
-        {/* School Logo Upload */}
+        {/* Upload Section */}
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">School Logo</h3>
-              <p className="text-sm text-gray-600">Upload your school logo for official documents and reports</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Upload Documents</h3>
+          <div className="grid grid-cols-3 gap-6">
+            {/* School Logo */}
+            <div className="text-center">
+              <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                 <span className="text-gray-400 text-xs">No Logo</span>
               </div>
+              <h4 className="font-medium text-gray-900 mb-1">School Logo</h4>
+              <p className="text-xs text-gray-600 mb-3">Used on reports</p>
               <button 
                 onClick={() => setShowTestModeModal(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
               >
-                Upload Logo
+                Upload
+              </button>
+            </div>
+            
+            {/* Institute Seal */}
+            <div className="text-center">
+              <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <span className="text-gray-400 text-xs">No Seal</span>
+              </div>
+              <h4 className="font-medium text-gray-900 mb-1">Institute Seal</h4>
+              <p className="text-xs text-gray-600 mb-3">Used on documents</p>
+              <button 
+                onClick={() => setShowTestModeModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+              >
+                Upload
+              </button>
+            </div>
+            
+            {/* Principal Sign */}
+            <div className="text-center">
+              <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <span className="text-gray-400 text-xs">No Sign</span>
+              </div>
+              <h4 className="font-medium text-gray-900 mb-1">Principal Sign</h4>
+              <p className="text-xs text-gray-600 mb-3">Used on certificates</p>
+              <button 
+                onClick={() => setShowTestModeModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+              >
+                Upload
               </button>
             </div>
           </div>
