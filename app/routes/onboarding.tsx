@@ -43,6 +43,111 @@ export default function Onboarding() {
     selectedPlan: ""
   });
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handlePayment = async (plan) => {
+    try {
+      console.log('Starting payment for plan:', plan);
+      
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        alert('Failed to load payment gateway');
+        return;
+      }
+
+      console.log('Creating order...');
+      // Create order
+      const response = await fetch('/.netlify/functions/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: plan.amount,
+          receipt: `receipt_${Date.now()}`,
+          notes: {
+            plan: plan.name,
+            user_email: formData.instituteEmail,
+            institute_name: formData.instituteName
+          }
+        })
+      });
+
+      console.log('Order response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const orderData = await response.json();
+      console.log('Order data:', orderData);
+      
+      if (!orderData.success) {
+        throw new Error(orderData.error || 'Failed to create order');
+      }
+
+      // Configure Razorpay
+      const options = {
+        key: orderData.key_id,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'Seekio Academic Management',
+        description: `Payment for ${plan.name}`,
+        order_id: orderData.order_id,
+        handler: async (response) => {
+          try {
+            console.log('Payment successful, verifying...');
+            // Verify payment
+            const verification = await fetch('/.netlify/functions/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                ...response,
+                user_email: formData.instituteEmail,
+                plan_details: plan
+              })
+            });
+
+            const result = await verification.json();
+            if (result.success) {
+              alert('Payment successful! Redirecting to dashboard...');
+              window.location.href = '/dashboard';
+            } else {
+              alert('Payment verification failed');
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            alert('Payment verification failed');
+          }
+        },
+        prefill: {
+          name: formData.name,
+          email: formData.instituteEmail,
+          contact: '9999999999'
+        },
+        theme: { color: '#2563eb' },
+        modal: {
+          ondismiss: () => {
+            console.log('Payment cancelled by user');
+          }
+        }
+      };
+
+      console.log('Opening Razorpay checkout...');
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert(`Payment failed: ${error.message}. Please try again.`);
+    }
+  };
+
   const handleNext = () => {
     if (currentPhase < phases.length - 1) {
       setCurrentPhase(currentPhase + 1);
@@ -321,9 +426,9 @@ export default function Onboarding() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Choose Your Plan</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { name: 'Basic', price: 'Free', features: ['Up to 50 students', 'Basic features', 'Email support'] },
-                { name: 'Professional', price: '₹999/month', features: ['Up to 500 students', 'Advanced features', 'Priority support'] },
-                { name: 'Enterprise', price: '₹2999/month', features: ['Unlimited students', 'All features', '24/7 support'] }
+                { name: 'Basic', price: 'Free', amount: 0, features: ['Up to 50 students', 'Basic features', 'Email support'] },
+                { name: 'Professional', price: '₹999/month', amount: 999, features: ['Up to 500 students', 'Advanced features', 'Priority support'] },
+                { name: 'Enterprise', price: '₹2999/month', amount: 2999, features: ['Unlimited students', 'All features', '24/7 support'] }
               ].map((plan) => (
                 <div
                   key={plan.name}
@@ -345,10 +450,10 @@ export default function Onboarding() {
                     </ul>
                     {formData.selectedPlan === plan.name && (
                       <Button
-                        onClick={() => handleStartTrial(plan.name)}
+                        onClick={() => plan.amount > 0 ? handlePayment(plan) : handleStartTrial(plan.name)}
                         className="w-full mt-4"
                       >
-                        Start Trial
+                        {plan.amount > 0 ? `Pay ${plan.price}` : 'Start Free Trial'}
                       </Button>
                     )}
                   </div>

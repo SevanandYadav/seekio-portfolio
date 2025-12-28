@@ -69,7 +69,7 @@ export const Hero = () => {
             transition={{ delay: 0.5 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <Link to="/contact">
+            <Link to="/pricing">
               <Button size="lg" className="group">
                 <motion.span
                   animate={{ rotate: 360 }}

@@ -6,7 +6,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Check, X } from "lucide-react";
+import { AlertTriangle, Check, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getContentUrl } from "../utils/config";
 
@@ -22,17 +22,166 @@ export default function Pricing() {
   const [pricingData, setPricingData] = useState<any>(null);
   const [showModal, setShowModal] = useState(true);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const [paymentLoading, setPaymentLoading] = useState(false);
+
+  // Handle plan selection and payment
+  const handlePlanSelection = async (plan: any) => {
+    if (plan.price === "0") {
+      // Free plan - redirect to signup
+      window.location.href = '/signup';
+      return;
+    }
+
+    // Paid plan - initiate Razorpay payment
+    setPaymentLoading(true);
+    
+    try {
+      const amount = billingPeriod === 'yearly' ? Math.round(plan.price * 0.8 * 12) : plan.price;
+      const planName = `${plan.name} - ${selectedType === 'school' ? 'School' : 'College'} (${billingPeriod})`;
+      
+      // Create order
+      const orderResponse = await fetch('/.netlify/functions/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: amount * 100, // Convert to paise
+          receipt: `receipt_${Date.now()}`,
+          notes: {
+            plan: planName,
+            billing: billingPeriod,
+            institutionType: selectedType
+          }
+        })
+      });
+      
+      const orderData = await orderResponse.json();
+      
+      if (!orderResponse.ok) {
+        throw new Error(orderData.error || 'Failed to create order');
+      }
+      
+      // Get Razorpay key from environment
+      const keyResponse = await fetch('/.netlify/functions/get-razorpay-key');
+      const keyData = await keyResponse.json();
+      
+      if (!keyResponse.ok) {
+        throw new Error('Failed to get payment configuration');
+      }
+      
+      // Initialize Razorpay
+      const options = {
+        key: keyData.key,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'Seekio Academic Solutions',
+        description: planName,
+        order_id: orderData.id,
+        handler: async function (response: any) {
+          try {
+            // Verify payment
+            const verifyResponse = await fetch('/.netlify/functions/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+              })
+            });
+            
+            const verifyData = await verifyResponse.json();
+            
+            if (verifyResponse.ok) {
+              // Payment successful - update user subscription
+              const userData = localStorage.getItem('user_data');
+              if (userData) {
+                const user = JSON.parse(userData);
+                user.subscription = {
+                  level: plan.name === 'Professional' ? 1 : 2,
+                  planName: planName,
+                  startDate: new Date().toISOString(),
+                  endDate: new Date(Date.now() + (billingPeriod === 'yearly' ? 365 : 30) * 24 * 60 * 60 * 1000).toISOString()
+                };
+                localStorage.setItem('user_data', JSON.stringify(user));
+              }
+              
+              alert('Payment successful! Your subscription has been activated.');
+              window.location.href = '/dashboard';
+            } else {
+              throw new Error(verifyData.error || 'Payment verification failed');
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            alert('Payment verification failed. Please contact support.');
+          }
+        },
+        prefill: {
+          name: 'User Name',
+          email: 'user@example.com',
+          contact: '9999999999'
+        },
+        theme: {
+          color: '#3B82F6'
+        }
+      };
+      
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+      
+    } catch (error) {
+      console.error('Payment initiation error:', error);
+      alert('Failed to initiate payment. Please try again.');
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
 
   useEffect(() => {
+    // Load Razorpay script
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+    
+    // Check URL parameters for type and expired status
+    const urlParams = new URLSearchParams(window.location.search);
+    const typeParam = urlParams.get('type');
+    const expiredParam = urlParams.get('expired');
+    
+    if (typeParam && (typeParam === 'school' || typeParam === 'college')) {
+      setSelectedType(typeParam);
+      setShowModal(false);
+      // Clear the stored type since we're now showing pricing
+      localStorage.removeItem('selected_institution_type');
+    }
+    
+    // If coming from expired subscription, skip modal and show pricing
+    if (expiredParam === 'true') {
+      // Get user's institution type from stored data or default to school
+      const userData = localStorage.getItem('user_data');
+      const institutionType = localStorage.getItem('selected_institution_type') || 'school';
+      setSelectedType(institutionType as 'school' | 'college');
+      setShowModal(false);
+    }
+    
     fetch(getContentUrl('/pricing.json'))
       .then(res => res.json())
       .then(data => setPricingData(data))
       .catch(error => console.error('Failed to load pricing data:', error));
+      
+    return () => {
+      // Cleanup script on unmount
+      const scripts = document.querySelectorAll('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+      scripts.forEach(script => script.remove());
+    };
   }, []);
 
   const handleTypeSelection = (type: 'school' | 'college') => {
     setSelectedType(type);
-    setShowModal(false);
+    // Store selected type in localStorage for later use
+    localStorage.setItem('selected_institution_type', type);
+    // Redirect to signup instead of showing pricing
+    window.location.href = '/signup';
   };
 
   const resetSelection = () => {
@@ -57,56 +206,125 @@ export default function Pricing() {
     <>
       <Navbar />
       
+      {/* Background content - only show when modal is open for blur effect */}
+      {!selectedType && showModal && pricingData && (
+        <div className="blur-sm pointer-events-none">
+          {/* Header Section */}
+          <section className="pt-32 pb-4 bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-4">
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                  Academic Management Pricing
+                </h1>
+                <p className="text-lg text-slate-600 dark:text-slate-400 font-medium mb-2">
+                  Transparent and Flexible Pricing
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                  Choose your institution type to view detailed pricing.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Placeholder pricing cards */}
+          <section className="py-6 bg-white dark:bg-gray-950">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[1,2,3].map((i) => (
+                  <div key={i} className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-700 rounded-xl p-6 shadow-lg">
+                    <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-4 w-3/4"></div>
+                    <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+                    <div className="space-y-2">
+                      {[1,2,3,4].map((j) => (
+                        <div key={j} className="h-3 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
+
       {/* Modal Overlay for Type Selection - Only show when no type selected */}
       {!selectedType && showModal && (
-        <div className="fixed inset-0 bg-blue-900 bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-40">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl p-8 max-w-2xl mx-4 shadow-2xl z-50 relative"
-          >
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                View Pricing For
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Please select your institution category.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div 
-                className="cursor-pointer text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700 hover:border-blue-500" 
-                onClick={() => handleTypeSelection('school')}
-              >
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-white">🏫</span>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">School</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  K-12 Schools & Primary Education
+        <div className="fixed inset-0 z-40 overflow-y-auto">
+          <div className="min-h-screen px-4 text-center">
+            {/* This element is to trick the browser into centering the modal contents. */}
+            <span className="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="inline-block w-full max-w-xl p-4 my-6 text-left align-middle bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-gray-700/50 transform transition-all"
+            >
+              <div className="text-center mb-6">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  View Pricing For
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Select your institution type
                 </p>
               </div>
 
-              <div 
-                className="cursor-pointer text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700 hover:border-purple-500" 
-                onClick={() => handleTypeSelection('college')}
-              >
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl text-white">🎓</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div 
+                  className="cursor-pointer text-center p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 dark:border-gray-700/50 hover:border-blue-400/50 hover:scale-105 group" 
+                  onClick={() => handleTypeSelection('school')}
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-md">
+                    <span className="text-xl text-white">🏫</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">School</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-300 mb-3">
+                    K-12 & Primary Education
+                  </p>
+                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md text-sm">
+                    Get Started
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">University / College</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Higher Education Institutions
-                </p>
+
+                <div 
+                  className="cursor-pointer text-center p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/30 dark:border-gray-700/50 hover:border-purple-400/50 hover:scale-105 group" 
+                  onClick={() => handleTypeSelection('college')}
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-md">
+                    <span className="text-xl text-white">🎓</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">College</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-300 mb-3">
+                    Higher Education
+                  </p>
+                  <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-purple-600 hover:to-purple-700 transition-all duration-300 shadow-md text-sm">
+                    Get Started
+                  </div>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
       )}
 
       {selectedType && currentPlans && (
-        <>
+        <div>
+          {/* Expired Subscription Banner */}
+          {new URLSearchParams(window.location.search).get('expired') === 'true' && (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <AlertTriangle className="h-5 w-5 text-red-400" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">
+                    <strong>Your trial has expired.</strong> Please choose a subscription plan to continue accessing all features.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* Switch Button - Fixed to extreme right with mobile-first design */}
           <div className="fixed top-20 right-2 md:right-4 z-30">
             <button 
@@ -192,7 +410,16 @@ export default function Pricing() {
           <section className="py-6 bg-white dark:bg-gray-950">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {currentPlans.plans.map((plan: any, index: number) => (
+                {currentPlans.plans
+                  .filter((plan: any) => {
+                    // If expired, only show Professional and Enterprise plans
+                    const isExpired = new URLSearchParams(window.location.search).get('expired') === 'true';
+                    if (isExpired) {
+                      return plan.name === 'Professional' || plan.name === 'Enterprise';
+                    }
+                    return true; // Show all plans normally
+                  })
+                  .map((plan: any, index: number) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
@@ -251,14 +478,20 @@ export default function Pricing() {
                         ))}
                       </ul>
 
-                      <Link to="/signup" className="block">
-                        <Button 
-                          className="w-full text-sm py-2" 
-                          variant={plan.popular ? "default" : "secondary"}
-                        >
-                          {plan.buttonText}
-                        </Button>
-                      </Link>
+                      <Button 
+                        onClick={() => handlePlanSelection(plan)}
+                        disabled={paymentLoading}
+                        className={`w-full text-sm py-3 font-semibold transition-all duration-200 ${plan.popular ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105' : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50'}`}
+                      >
+                        {paymentLoading ? (
+                          <div className="flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Processing...
+                          </div>
+                        ) : (
+                          plan.price === "0" ? "Start Free Trial" : "Choose Plan"
+                        )}
+                      </Button>
                     </div>
                   </Card>
                 </motion.div>
@@ -454,26 +687,42 @@ export default function Pricing() {
                         
                         {/* Action Row */}
                         <tr className="bg-gray-100 dark:bg-gray-700">
-                          <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white min-w-48">Get Started</td>
+                          <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white min-w-48">Choose Plan</td>
                           <td className="px-6 py-4 text-center min-w-32">
-                            <Link to="/signup">
-                              <Button size="sm" className="text-xs">Get Started Free</Button>
-                            </Link>
+                            <button
+                              onClick={() => handlePlanSelection({name: 'Basic', price: '0'})}
+                              disabled={paymentLoading}
+                              className="text-xs bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50"
+                            >
+                              {paymentLoading ? 'Processing...' : 'Choose Plan'}
+                            </button>
                           </td>
                           <td className="px-6 py-4 text-center min-w-32">
-                            <Link to="/signup">
-                              <Button size="sm" className="text-xs">Try for Free</Button>
-                            </Link>
+                            <button
+                              onClick={() => handlePlanSelection({name: 'Professional', price: '3200'})}
+                              disabled={paymentLoading}
+                              className="text-xs bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50"
+                            >
+                              {paymentLoading ? 'Processing...' : 'Choose Plan'}
+                            </button>
                           </td>
                           <td className="px-6 py-4 text-center min-w-32">
-                            <Link to="/signup">
-                              <Button size="sm" variant="secondary" className="text-xs">Contact Sales</Button>
-                            </Link>
+                            <button
+                              onClick={() => handlePlanSelection({name: 'Enterprise', price: '35'})}
+                              disabled={paymentLoading}
+                              className="text-xs bg-gray-600 text-white px-3 py-1 rounded disabled:opacity-50"
+                            >
+                              {paymentLoading ? 'Processing...' : 'Choose Plan'}
+                            </button>
                           </td>
                           <td className="px-6 py-4 text-center min-w-32">
-                            <Link to="/signup">
-                              <Button size="sm" variant="secondary" className="text-xs">Contact Sales</Button>
-                            </Link>
+                            <button
+                              onClick={() => handlePlanSelection({name: 'Custom', price: '0'})}
+                              disabled={paymentLoading}
+                              className="text-xs bg-gray-600 text-white px-3 py-1 rounded disabled:opacity-50"
+                            >
+                              {paymentLoading ? 'Processing...' : 'Contact Us'}
+                            </button>
                           </td>
                         </tr>
                         </tbody>
@@ -497,7 +746,7 @@ export default function Pricing() {
               )}
             </div>
           </section>
-        </>
+        </div>
       )}
 
       <Footer />

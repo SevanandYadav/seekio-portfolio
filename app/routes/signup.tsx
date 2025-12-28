@@ -27,6 +27,15 @@ export default function Signup() {
   const [step, setStep] = useState<'contact' | 'otp' | 'success'>('contact');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{email?: string; mobile?: string; password?: string}>({});
+  const [selectedInstitutionType, setSelectedInstitutionType] = useState<string | null>(null);
+
+  // Check for selected institution type from pricing page
+  useEffect(() => {
+    const institutionType = localStorage.getItem('selected_institution_type');
+    if (institutionType) {
+      setSelectedInstitutionType(institutionType);
+    }
+  }, []);
 
   // Validation functions
   const validateEmail = (email: string) => {
@@ -219,9 +228,21 @@ export default function Signup() {
           id: 1, 
           email: testEmail, 
           name: 'Test User',
-          isLive: testIsLive
+          isLive: testIsLive,
+          subscription: signupData?.testCredentials?.subscription || {
+            level: 0,
+            planName: 'Free Trial',
+            startDate: new Date().toISOString(),
+            endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+          }
         }));
-        window.location.href = '/dashboard';
+        // Redirect to pricing if came from pricing page, otherwise dashboard
+        const institutionType = localStorage.getItem('selected_institution_type');
+        if (institutionType) {
+          window.location.href = `/pricing?type=${institutionType}`;
+        } else {
+          window.location.href = '/dashboard';
+        }
       }, 1000);
       return;
     }
@@ -299,7 +320,13 @@ export default function Signup() {
             id: 1, 
             mobile: mobile || undefined,
             email: email || undefined,
-            name: 'Test User'
+            name: 'Test User',
+            subscription: signupData?.testCredentials?.subscription || {
+              level: 0,
+              planName: 'Free Trial',
+              startDate: new Date().toISOString(),
+              endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+            }
           }));
           window.location.href = '/dashboard';
         } else {
@@ -409,11 +436,17 @@ export default function Signup() {
                 >
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                      Welcome Back!
+                      {selectedInstitutionType ? `Welcome to ${selectedInstitutionType === 'school' ? 'School' : 'College'} Solutions!` : 'Welcome Back!'}
                     </h2>
                     <p className="text-gray-600 dark:text-gray-400">
-                      Choose how you'd like to continue
+                      {selectedInstitutionType ? 'Sign in or create an account to view pricing' : 'Choose how you\'d like to continue'}
                     </p>
+                    {selectedInstitutionType && (
+                      <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm">
+                        <span className="mr-2">{selectedInstitutionType === 'school' ? '🏫' : '🎓'}</span>
+                        {selectedInstitutionType === 'school' ? 'School Management' : 'College Management'}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="space-y-4">

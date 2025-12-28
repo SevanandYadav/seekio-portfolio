@@ -41,7 +41,7 @@ export const CTA = () => {
             {content.subheading}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/contact">
+            <Link to="/pricing">
               <Button variant="secondary" size="lg" className="group">
                 {content.primaryCTA}
                 <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />

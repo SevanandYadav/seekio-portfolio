@@ -8,14 +8,62 @@ export function DashboardHome({ data }: DashboardHomeProps) {
   const stats = data?.dashboard || {};
   const employees = data?.employees || [];
   const communication = data?.communication || {};
+  
+  // Get user subscription data
+  const userData = localStorage.getItem('user_data');
+  const user = userData ? JSON.parse(userData) : null;
+  const subscription = user?.subscription || { level: 0, planName: 'Free Trial' };
+  const isLiveMode = user?.isLive;
+  
+  // Calculate trial days from subscription
+  const calculateTrialDays = () => {
+    if (!subscription?.endDate) return 0;
+    const endDate = new Date(subscription.endDate);
+    const today = new Date();
+    const daysLeft = Math.ceil((endDate.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
+    return Math.max(0, daysLeft);
+  };
+  
+  // Check if subscription has expired
+  const isSubscriptionExpired = () => {
+    if (!subscription?.endDate) return false;
+    const endDate = new Date(subscription.endDate);
+    const today = new Date();
+    return today > endDate;
+  };
 
   return (
     <div className="space-y-6">
-      {/* Trial Warning */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center">
-        <AlertTriangle className="text-yellow-600 mr-3" size={20} />
-        <span className="text-yellow-800 font-medium">Your Trial Ends in 29 days</span>
-      </div>
+      {/* Trial Warning - Only show in test mode */}
+      {!isLiveMode && (
+        <div className={`rounded-lg p-4 flex items-center ${
+          isSubscriptionExpired() 
+            ? 'bg-red-50 border border-red-200' 
+            : 'bg-yellow-50 border border-yellow-200'
+        }`}>
+          <AlertTriangle className={`mr-3 ${
+            isSubscriptionExpired() ? 'text-red-600' : 'text-yellow-600'
+          }`} size={20} />
+          <div className="flex-1">
+            <span className={`font-medium ${
+              isSubscriptionExpired() ? 'text-red-800' : 'text-yellow-800'
+            }`}>
+              {isSubscriptionExpired() 
+                ? 'Your trial has ended. Please choose a subscription plan to continue.' 
+                : `Your Trial Ends in ${calculateTrialDays()} days`
+              }
+            </span>
+          </div>
+          {isSubscriptionExpired() && (
+            <button 
+              onClick={() => window.location.href = '/pricing?expired=true'}
+              className="ml-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              Choose Plan
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

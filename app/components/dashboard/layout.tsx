@@ -76,9 +76,24 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
     applicableTo: { teachers: false, students: false }
   });
   
-  // Check if user is in live mode
+  // Check if user is in live mode and get subscription data
   const userData = localStorage.getItem('user_data');
-  const isLiveMode = userData && JSON.parse(userData).isLive;
+  const user = userData ? JSON.parse(userData) : null;
+  const isLiveMode = user?.isLive;
+  const subscription = user?.subscription || { level: 0, planName: 'Free Trial' };
+  
+  // Subscription level names
+  const getSubscriptionName = (level: number) => {
+    switch(level) {
+      case 0: return 'Free Trial';
+      case 1: return 'Professional';
+      case 2: return 'Enterprise';
+      default: return 'Free Trial';
+    }
+  };
+  
+  // Check if user needs upgrade button (not on Enterprise level)
+  const showUpgradeButton = subscription.level < 2;
   
   // Load events from cache
   useEffect(() => {
@@ -107,13 +122,20 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
     };
   }, [showUserMenu]);
   
-  const calculateTrialDays = (signupDate: string) => {
-    if (!signupDate) return 29;
-    const signup = new Date(signupDate);
+  const calculateTrialDays = () => {
+    if (!subscription?.endDate) return 0;
+    const endDate = new Date(subscription.endDate);
     const today = new Date();
-    const trialEnd = new Date(signup.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days from signup
-    const daysLeft = Math.ceil((trialEnd.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
+    const daysLeft = Math.ceil((endDate.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
     return Math.max(0, daysLeft);
+  };
+  
+  // Check if subscription has expired
+  const isSubscriptionExpired = () => {
+    if (!subscription?.endDate) return false;
+    const endDate = new Date(subscription.endDate);
+    const today = new Date();
+    return today > endDate;
   };
   
   const handleGoLive = () => {
@@ -382,50 +404,83 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
             <div className="text-sm text-gray-600">
               Good Evening, {data?.schoolName || "JJ English Medium School"}
             </div>
-            <div className="relative">
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowUserMenu(!showUserMenu);
-                }}
-                className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                <User size={20} />
-                <span className="text-sm">Profile</span>
-              </button>
-              {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  {isLiveMode && (
+            <div className="flex items-center space-x-4">
+              {/* Upgrade Button - Show if not on Enterprise */}
+              {showUpgradeButton && (
+                <button 
+                  onClick={() => window.location.href = '/pricing'}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 flex items-center space-x-2"
+                >
+                  <CreditCard size={16} />
+                  <span>Upgrade Plan</span>
+                </button>
+              )}
+              
+              <div className="relative">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowUserMenu(!showUserMenu);
+                  }}
+                  className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  <User size={20} />
+                  <span className="text-sm">Profile</span>
+                </button>
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    {/* Subscription Info */}
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <div className="text-xs text-gray-500 mb-1">Current Plan</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-900">{getSubscriptionName(subscription.level)}</span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          subscription.level === 0 ? 'bg-gray-100 text-gray-700' :
+                          subscription.level === 1 ? 'bg-blue-100 text-blue-700' :
+                          'bg-purple-100 text-purple-700'
+                        }`}>
+                          Level {subscription.level}
+                        </span>
+                      </div>
+                      {subscription.endDate && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          Expires: {new Date(subscription.endDate).toLocaleDateString()}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {isLiveMode && (
+                      <button 
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          setActiveMenu('profile');
+                        }}
+                        className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      >
+                        <User size={16} className="mr-3" />
+                        View Profile
+                      </button>
+                    )}
                     <button 
                       onClick={() => {
                         setShowUserMenu(false);
-                        setActiveMenu('profile');
+                        setShowPasswordModal(true);
                       }}
                       className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
-                      <User size={16} className="mr-3" />
-                      View Profile
+                      <Key size={16} className="mr-3" />
+                      Reset Password
                     </button>
-                  )}
-                  <button 
-                    onClick={() => {
-                      setShowUserMenu(false);
-                      setShowPasswordModal(true);
-                    }}
-                    className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                  >
-                    <Key size={16} className="mr-3" />
-                    Reset Password
-                  </button>
-                  <button 
-                    onClick={handleLogout}
-                    className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                  >
-                    <LogOut size={16} className="mr-3" />
-                    Logout
-                  </button>
-                </div>
-              )}
+                    <button 
+                      onClick={handleLogout}
+                      className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      <LogOut size={16} className="mr-3" />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -538,14 +593,38 @@ export function DashboardLayout({ children, activeMenu, setActiveMenu, data }: D
 
               {/* Trial Warning - Only show in test mode */}
               {!isLiveMode && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className={`rounded-lg p-4 ${
+                  isSubscriptionExpired() 
+                    ? 'bg-red-50 border border-red-200' 
+                    : 'bg-yellow-50 border border-yellow-200'
+                }`}>
                   <div className="flex items-center mb-2">
-                    <AlertTriangle size={16} className="text-yellow-600 mr-2" />
-                    <span className="text-sm font-medium text-yellow-800">Trial Warning</span>
+                    <AlertTriangle size={16} className={`mr-2 ${
+                      isSubscriptionExpired() ? 'text-red-600' : 'text-yellow-600'
+                    }`} />
+                    <span className={`text-sm font-medium ${
+                      isSubscriptionExpired() ? 'text-red-800' : 'text-yellow-800'
+                    }`}>
+                      {isSubscriptionExpired() ? 'Subscription Expired' : 'Trial Warning'}
+                    </span>
                   </div>
-                  <p className="text-sm text-yellow-700">
-                    {data?.dashboard?.trialDays ? `Your Trial Ends in ${data.dashboard.trialDays} days` : `Your Trial Ends in ${calculateTrialDays(data?.signupDate)} days`}
+                  <p className={`text-sm mb-3 ${
+                    isSubscriptionExpired() ? 'text-red-700' : 'text-yellow-700'
+                  }`}>
+                    {isSubscriptionExpired() 
+                      ? 'Your trial has ended. Please choose a subscription plan to continue using all features.' 
+                      : `Your Trial Ends in ${calculateTrialDays()} days`
+                    }
                   </p>
+                  {isSubscriptionExpired() && (
+                    <button 
+                      onClick={() => window.location.href = '/pricing?expired=true'}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2"
+                    >
+                      <CreditCard size={16} />
+                      <span>Choose Subscription Plan</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
