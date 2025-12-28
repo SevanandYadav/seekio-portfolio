@@ -1,8 +1,8 @@
 import type { Route } from "./+types/onboarding";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
-import { ArrowLeft, ArrowRight, Upload, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, Check, Edit2 } from "lucide-react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -27,6 +27,7 @@ export default function Onboarding() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successStep, setSuccessStep] = useState(1); // 1 = confirming, 2 = success
   const [selectedPlanForTrial, setSelectedPlanForTrial] = useState("");
+  const [emailEditable, setEmailEditable] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     instituteType: "",
@@ -42,6 +43,21 @@ export default function Onboarding() {
     principalSignature: null,
     selectedPlan: ""
   });
+
+  // Prepopulate email from signup process
+  useEffect(() => {
+    const userData = localStorage.getItem('user_data');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        if (user.email) {
+          setFormData(prev => ({ ...prev, instituteEmail: user.email }));
+        }
+      } catch (error) {
+        console.error('Failed to parse user data:', error);
+      }
+    }
+  }, []);
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -319,13 +335,31 @@ export default function Onboarding() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  value={formData.instituteEmail}
-                  onChange={(e) => handleInputChange('instituteEmail', e.target.value)}
-                  placeholder="institute@example.com"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
+                <div className="relative">
+                  <input
+                    type="email"
+                    value={formData.instituteEmail}
+                    onChange={(e) => handleInputChange('instituteEmail', e.target.value)}
+                    placeholder="institute@example.com"
+                    disabled={!emailEditable}
+                    className={`w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 ${
+                      !emailEditable ? 'bg-gray-50 text-gray-600' : ''
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setEmailEditable(!emailEditable)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors"
+                    title={emailEditable ? 'Lock email' : 'Edit email'}
+                  >
+                    <Edit2 size={16} />
+                  </button>
+                </div>
+                {!emailEditable && formData.instituteEmail && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Email from signup. Click the edit icon to change.
+                  </p>
+                )}
               </div>
             </div>
           </motion.div>

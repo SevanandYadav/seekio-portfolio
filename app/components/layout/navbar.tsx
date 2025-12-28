@@ -45,7 +45,7 @@ export const Navbar = memo(() => {
 
           <div className="hidden md:flex items-center">
             <Link
-              to="/signup"
+              to="/pricing"
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               GET STARTED FOR FREE
@@ -81,7 +81,7 @@ export const Navbar = memo(() => {
                 </Link>
               ))}
               <Link
-                to="/signup"
+                to="/pricing"
                 onClick={() => setIsOpen(false)}
                 className="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-3 rounded-lg font-semibold text-sm text-center transition-all duration-200 shadow-lg mt-4"
               >
