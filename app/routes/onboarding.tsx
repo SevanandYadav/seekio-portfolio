@@ -26,6 +26,8 @@ export default function Onboarding() {
   const [showTrialModal, setShowTrialModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successStep, setSuccessStep] = useState(1); // 1 = confirming, 2 = success
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [selectedPlanForTrial, setSelectedPlanForTrial] = useState("");
   const [emailEditable, setEmailEditable] = useState(false);
   const [formData, setFormData] = useState({
@@ -98,7 +100,8 @@ export default function Onboarding() {
       }
     } catch (error) {
       console.error('Institute onboarding error:', error);
-      alert(`Failed to create institute: ${error.message}`);
+      setErrorMessage(`Failed to create institute: ${error.message}`);
+      setShowErrorModal(true);
       return false;
     }
   };
@@ -619,6 +622,35 @@ export default function Onboarding() {
                 className="flex-1"
               >
                 Cancel
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Error Modal */}
+      {showErrorModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-6 max-w-md w-full mx-4"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <X className="text-red-600" size={32} />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Setup Failed
+              </h3>
+              <p className="text-gray-600 mb-6">
+                {errorMessage}
+              </p>
+              <Button
+                onClick={() => setShowErrorModal(false)}
+                className="w-full"
+              >
+                Try Again
               </Button>
             </div>
           </motion.div>

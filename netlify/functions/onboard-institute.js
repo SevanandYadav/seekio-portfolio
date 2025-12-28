@@ -6,7 +6,11 @@ exports.handler = async (event, context) => {
   try {
     const instituteData = JSON.parse(event.body);
     
-    const response = await fetch(process.env.INS_REG_URL, {
+    const apiUrl = process.env.INS_REG_URL.startsWith('http') 
+      ? process.env.INS_REG_URL 
+      : `https://${process.env.INS_REG_URL}`;
+    
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(instituteData)
