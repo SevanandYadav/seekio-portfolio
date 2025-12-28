@@ -60,6 +60,49 @@ export default function Onboarding() {
     }
   }, []);
 
+  const handleOnboardInstitute = async () => {
+    try {
+      const userData = localStorage.getItem('user_data');
+      const user = userData ? JSON.parse(userData) : null;
+      
+      const instituteData = {
+        onboardedBy: user?.email || formData.instituteEmail,
+        phone: formData.phone || '',
+        type: formData.instituteType,
+        sessionCycle: formData.sessionCycle,
+        instituteName: formData.instituteName,
+        instituteLogoUrl: '', // Will be updated when file upload is implemented
+        websiteUrl: formData.website || '',
+        affiliateNo: formData.affiliateNumber || '',
+        instituteAddress: formData.address,
+        feeStructure: formData.feeStructure,
+        installmentAllowed: formData.allowInstallments === 'yes',
+        principalSignUrl: '', // Will be updated when file upload is implemented
+        subscription: 'free'
+      };
+      
+      const response = await fetch('/.netlify/functions/onboard-institute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(instituteData)
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        // Store institute data in localStorage
+        localStorage.setItem('institute_data', JSON.stringify(result.data));
+        return true;
+      } else {
+        throw new Error(result.message || 'Failed to onboard institute');
+      }
+    } catch (error) {
+      console.error('Institute onboarding error:', error);
+      alert(`Failed to create institute: ${error.message}`);
+      return false;
+    }
+  };
+
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
       const script = document.createElement('script');
@@ -71,6 +114,10 @@ export default function Onboarding() {
   };
 
   const handlePayment = async (plan) => {
+    // First onboard institute
+    const success = await handleOnboardInstitute();
+    if (!success) return;
+    
     try {
       console.log('Starting payment for plan:', plan?.name?.replace(/[\r\n]/g, '') || 'Unknown plan');
       
@@ -492,7 +539,17 @@ export default function Onboarding() {
                     </ul>
                     {formData.selectedPlan === plan.name && (
                       <Button
-                        onClick={() => plan.amount > 0 ? handlePayment(plan) : handleStartTrial(plan.name)}
+                        onClick={async () => {
+                          if (plan.amount > 0) {
+                            await handlePayment(plan);
+                          } else {
+                            // For free plan, onboard institute first
+                            const success = await handleOnboardInstitute();
+                            if (success) {
+                              handleStartTrial(plan.name);
+                            }
+                          }
+                        }}
                         className="w-full mt-4"
                       >
                         {plan.amount > 0 ? `Pay ${plan.price}` : 'Start Free Trial'}

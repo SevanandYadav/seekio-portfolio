@@ -4,27 +4,20 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const { username, email, password, role } = JSON.parse(event.body);
+    const instituteData = JSON.parse(event.body);
     
-    console.log('Calling API:', process.env.REGISTER_API_URL);
-    console.log('Payload:', { username, email, role }); // Don't log password
-    
-    const response = await fetch(process.env.REGISTER_API_URL, {
+    const response = await fetch(process.env.INS_REG_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password, role })
+      body: JSON.stringify(instituteData)
     });
 
-    console.log('API Response status:', response.status);
-    
     const responseText = await response.text();
-    console.log('API Response text:', responseText);
     
     let data;
     try {
       data = JSON.parse(responseText);
     } catch (e) {
-      // If response is not JSON, return the text as error
       data = { error: responseText };
     }
     
@@ -34,11 +27,10 @@ exports.handler = async (event, context) => {
       body: JSON.stringify(data)
     };
   } catch (error) {
-    console.error('Registration error:', error);
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Registration failed', details: error.message })
+      body: JSON.stringify({ error: 'Institute onboarding failed', details: error.message })
     };
   }
 };
