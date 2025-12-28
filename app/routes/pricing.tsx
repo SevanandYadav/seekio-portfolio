@@ -335,17 +335,18 @@ export default function Pricing() {
                   setSelectedType('school');
                 }
               }}
-              className="text-sm md:text-xs px-4 py-2 md:px-3 md:py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 flex items-center gap-2 md:gap-1.5 border border-blue-200 dark:border-blue-800 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="text-sm md:text-xs px-3 py-2 md:px-3 md:py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-200 flex items-center gap-1.5 border border-blue-200 dark:border-blue-800 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label={`Switch to ${selectedType === 'school' ? 'college' : 'school'} pricing`}
             >
               {selectedType === 'school' ? (
                 <>
-                  <span className="text-base md:text-sm">🎓</span>
+                  <span className="text-base md:text-sm" aria-hidden="true">🎓</span>
                   <span className="hidden sm:inline">View College Pricing</span>
                   <span className="sm:hidden">College</span>
                 </>
               ) : (
                 <>
-                  <span className="text-base md:text-sm">🏫</span>
+                  <span className="text-base md:text-sm" aria-hidden="true">🏫</span>
                   <span className="hidden sm:inline">View School Pricing</span>
                   <span className="sm:hidden">School</span>
                 </>
@@ -360,25 +361,28 @@ export default function Pricing() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-4"
+                role="banner"
               >
                 <div className="text-center">
-                  <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
                     {selectedType === 'school' ? 'School' : 'University/College'} Management Pricing
                   </h1>
-                  <p className="text-lg text-slate-600 dark:text-slate-400 font-medium mb-2">
+                  <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 font-medium mb-2">
                     Transparent and Flexible Pricing
                   </p>
-                  <p className="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-3xl mx-auto px-4">
                     Explore our detailed pricing for {selectedType === 'school' ? 'schools' : 'colleges and universities'} with integrations, services, and payment gateway charges.
                   </p>
                 </div>
-                {/* Billing Period Switcher - Minimal gap */}
-                <div className="flex justify-center mt-4">
-                  <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-1 shadow-inner border border-gray-200 dark:border-gray-700">
+                {/* Billing Period Switcher - Mobile optimized */}
+                <div className="flex justify-center mt-6">
+                  <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-1 shadow-inner border border-gray-200 dark:border-gray-700" role="tablist" aria-label="Billing period selection">
                     <div className="flex gap-1">
                       <button
                         onClick={() => setBillingPeriod('monthly')}
-                        className={`px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                        role="tab"
+                        aria-selected={billingPeriod === 'monthly'}
+                        className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                           billingPeriod === 'monthly'
                             ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-md'
                             : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
@@ -388,14 +392,16 @@ export default function Pricing() {
                       </button>
                       <button
                         onClick={() => setBillingPeriod('yearly')}
-                        className={`px-6 py-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center ${
+                        role="tab"
+                        aria-selected={billingPeriod === 'yearly'}
+                        className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                           billingPeriod === 'yearly'
                             ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-md'
                             : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                         }`}
                       >
                         Yearly
-                        <span className="ml-2 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full font-medium">
+                        <span className="ml-1 sm:ml-2 text-xs bg-green-500 text-white px-1.5 sm:px-2 py-0.5 rounded-full font-medium">
                           20% OFF
                         </span>
                       </button>
@@ -409,7 +415,7 @@ export default function Pricing() {
           {/* Pricing Plans Section */}
           <section className="py-6 bg-white dark:bg-gray-950">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {currentPlans.plans
                   .filter((plan: any) => {
                     // If expired, only show Professional and Enterprise plans
@@ -426,27 +432,27 @@ export default function Pricing() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Card className={`h-full relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-700 ${plan.popular ? 'ring-2 ring-blue-500 shadow-xl' : 'shadow-lg'}`}>
+                  <Card className={`h-full relative bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-700 ${plan.popular ? 'ring-2 ring-blue-500 shadow-xl' : 'shadow-lg'}`} role="article" aria-labelledby={`plan-${index}-title`}>
                     {plan.popular && (
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                        <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                        <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium" role="badge">
                           Most Popular
                         </span>
                       </div>
                     )}
                     
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{plan.name}</h3>
-                      <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">{plan.description}</p>
+                    <div className="p-4 sm:p-6">
+                      <h3 id={`plan-${index}-title`} className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">{plan.name}</h3>
+                      <p className="text-gray-600 dark:text-gray-400 mb-4 text-xs sm:text-sm">{plan.description}</p>
                       
                       <div className="mb-4">
-                        <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                        <span className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                           {plan.price === "0" ? "Free" : 
                            plan.period === "student/month" ? 
                            `₹${billingPeriod === 'yearly' ? Math.round(plan.price * 0.8 * 12) : plan.price}` :
                            `₹${billingPeriod === 'yearly' ? Math.round(plan.price * 0.8 * 12) : plan.price}`}
                         </span>
-                        <span className="text-gray-600 dark:text-gray-400 text-sm">
+                        <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
                           {plan.price === "0" ? "" : 
                            plan.period === "student/month" ? 
                            `/${billingPeriod === 'yearly' ? 'student/year' : plan.period}` :
@@ -459,16 +465,16 @@ export default function Pricing() {
                         )}
                       </div>
 
-                      <ul className="space-y-2 mb-6 text-sm max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+                      <ul className="space-y-2 mb-6 text-xs sm:text-sm max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600" role="list" aria-label={`${plan.name} plan features`}>
                         {plan.features.map((feature: any, idx: number) => (
-                          <li key={idx} className="flex items-start">
+                          <li key={idx} className="flex items-start" role="listitem">
                             {feature.included ? (
-                              <div className="w-5 h-5 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
-                                <Check size={12} className="text-green-600 dark:text-green-400" />
+                              <div className="w-4 h-4 sm:w-5 sm:h-5 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
+                                <Check size={10} className="text-green-600 dark:text-green-400 sm:w-3 sm:h-3" aria-hidden="true" />
                               </div>
                             ) : (
-                              <div className="w-5 h-5 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
-                                <X size={12} className="text-red-600 dark:text-red-400" />
+                              <div className="w-4 h-4 sm:w-5 sm:h-5 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
+                                <X size={10} className="text-red-600 dark:text-red-400 sm:w-3 sm:h-3" aria-hidden="true" />
                               </div>
                             )}
                             <span className={`text-xs ${feature.included ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
@@ -481,17 +487,21 @@ export default function Pricing() {
                       <Button 
                         onClick={() => handlePlanSelection(plan)}
                         disabled={paymentLoading}
-                        className={`w-full text-sm py-3 font-semibold transition-all duration-200 ${plan.popular ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105' : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50'}`}
+                        className={`w-full text-xs sm:text-sm py-2 sm:py-3 font-semibold transition-all duration-200 focus:ring-4 focus:ring-blue-300 ${plan.popular ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105' : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50'}`}
+                        aria-describedby={`plan-${index}-action`}
                       >
                         {paymentLoading ? (
                           <div className="flex items-center justify-center">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-2" aria-hidden="true"></div>
                             Processing...
                           </div>
                         ) : (
                           plan.price === "0" ? "Start Free Trial" : "Choose Plan"
                         )}
                       </Button>
+                      <p id={`plan-${index}-action`} className="sr-only">
+                        {plan.price === "0" ? "Start your free trial" : `Select the ${plan.name} plan`}
+                      </p>
                     </div>
                   </Card>
                 </motion.div>
