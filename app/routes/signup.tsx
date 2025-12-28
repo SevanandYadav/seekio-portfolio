@@ -179,46 +179,46 @@ export default function Signup() {
       if (activeTab === 'signup') {
         const password = Math.random().toString(36).slice(-8);
         
-        // First send password via email
-        const emailResponse = await fetch('/.netlify/functions/send-email', {
+        // First call backend API to create user
+        const response = await fetch('/.netlify/functions/register-user', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            name: 'Seekio Campus Signup',
+            username: fullName,
             email: email,
-            company: 'Seekio Campus',
-            service: 'signup-credentials',
-            message: `Welcome to Seekio Campus! Your login credentials:\nEmail: ${email}\nPassword: ${password}`,
-            isCredentials: true,
-            credentials: { email: email, password: password }
+            password: password,
+            role: role.toUpperCase()
           })
         });
         
-        if (emailResponse.ok) {
-          // Then call backend API to create user
-          const response = await fetch('/.netlify/functions/register-user', {
+        if (response.ok) {
+          // Then send password via email
+          const emailResponse = await fetch('/.netlify/functions/send-email', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              username: fullName,
+              name: 'Seekio Campus Signup',
               email: email,
-              password: password,
-              role: role.toUpperCase()
+              company: 'Seekio Campus',
+              service: 'signup-credentials',
+              message: `Welcome to Seekio Campus! Your login credentials:\nEmail: ${email}\nPassword: ${password}`,
+              isCredentials: true,
+              credentials: { email: email, password: password }
             })
           });
           
-          if (response.ok) {
+          if (emailResponse.ok) {
             setStep('success');
           } else {
-            const errorData = await response.json();
-            setErrors({email: errorData.message || 'Failed to create account. Please try again.'});
+            setErrors({email: 'Account created but failed to send credentials email. Please contact support.'});
           }
         } else {
-          setErrors({email: 'Failed to send credentials email. Please try again.'});
+          const errorData = await response.json();
+          setErrors({email: errorData.message || 'Failed to create account. Please try again.'});
         }
       } else {
         // Login flow - use existing logic
