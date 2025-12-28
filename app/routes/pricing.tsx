@@ -525,10 +525,18 @@ export default function Pricing() {
                             </tr>
                             <tr className="bg-gradient-to-r from-slate-200 to-gray-200 dark:from-slate-600 dark:to-gray-600">
                               <td className="px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300">Pricing</td>
-                              <td className="px-6 py-3 text-center text-sm font-bold text-green-600">Free</td>
-                              <td className="px-6 py-3 text-center text-sm font-bold text-blue-600">₹3,200/month</td>
-                              <td className="px-6 py-3 text-center text-sm font-bold text-purple-600">₹35/student/month</td>
-                              <td className="px-6 py-3 text-center text-sm font-bold text-orange-600">Contact us</td>
+                              <td className="px-6 py-3 text-center text-sm font-bold text-green-600">
+                                {currentPlans.plans[0]?.price === "0" ? "Free" : `₹${billingPeriod === 'yearly' ? Math.round(currentPlans.plans[0]?.price * 0.8 * 12) : currentPlans.plans[0]?.price}/${billingPeriod === 'yearly' ? 'year' : 'month'}`}
+                              </td>
+                              <td className="px-6 py-3 text-center text-sm font-bold text-blue-600">
+                                {currentPlans.plans[1]?.price === "0" ? "Free" : `₹${billingPeriod === 'yearly' ? Math.round(currentPlans.plans[1]?.price * 0.8 * 12) : currentPlans.plans[1]?.price}/${billingPeriod === 'yearly' ? 'year' : currentPlans.plans[1]?.period || 'month'}`}
+                              </td>
+                              <td className="px-6 py-3 text-center text-sm font-bold text-purple-600">
+                                {currentPlans.plans[2]?.price === "0" ? "Free" : `₹${billingPeriod === 'yearly' ? Math.round(currentPlans.plans[2]?.price * 0.8 * 12) : currentPlans.plans[2]?.price}/${billingPeriod === 'yearly' ? 'student/year' : currentPlans.plans[2]?.period || 'student/month'}`}
+                              </td>
+                              <td className="px-6 py-3 text-center text-sm font-bold text-orange-600">
+                                {currentPlans.plans[3]?.price === "0" || !currentPlans.plans[3]?.price ? "Contact us" : `₹${billingPeriod === 'yearly' ? Math.round(currentPlans.plans[3]?.price * 0.8 * 12) : currentPlans.plans[3]?.price}/${billingPeriod === 'yearly' ? 'year' : currentPlans.plans[3]?.period || 'month'}`}
+                              </td>
                             </tr>
                           </thead>
                         </table>
@@ -690,7 +698,7 @@ export default function Pricing() {
                           <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white min-w-48">Choose Plan</td>
                           <td className="px-6 py-4 text-center min-w-32">
                             <button
-                              onClick={() => handlePlanSelection({name: 'Basic', price: '0'})}
+                              onClick={() => handlePlanSelection(currentPlans.plans[0])}
                               disabled={paymentLoading}
                               className="text-xs bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50"
                             >
@@ -699,7 +707,7 @@ export default function Pricing() {
                           </td>
                           <td className="px-6 py-4 text-center min-w-32">
                             <button
-                              onClick={() => handlePlanSelection({name: 'Professional', price: '3200'})}
+                              onClick={() => handlePlanSelection(currentPlans.plans[1])}
                               disabled={paymentLoading}
                               className="text-xs bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50"
                             >
@@ -708,7 +716,7 @@ export default function Pricing() {
                           </td>
                           <td className="px-6 py-4 text-center min-w-32">
                             <button
-                              onClick={() => handlePlanSelection({name: 'Enterprise', price: '35'})}
+                              onClick={() => handlePlanSelection(currentPlans.plans[2])}
                               disabled={paymentLoading}
                               className="text-xs bg-gray-600 text-white px-3 py-1 rounded disabled:opacity-50"
                             >
@@ -717,11 +725,11 @@ export default function Pricing() {
                           </td>
                           <td className="px-6 py-4 text-center min-w-32">
                             <button
-                              onClick={() => handlePlanSelection({name: 'Custom', price: '0'})}
+                              onClick={() => handlePlanSelection(currentPlans.plans[3] || {name: 'Custom', price: '0'})}
                               disabled={paymentLoading}
                               className="text-xs bg-gray-600 text-white px-3 py-1 rounded disabled:opacity-50"
                             >
-                              {paymentLoading ? 'Processing...' : 'Contact Us'}
+                              {paymentLoading ? 'Processing...' : (currentPlans.plans[3]?.price === '0' || !currentPlans.plans[3]?.price ? 'Contact Us' : 'Choose Plan')}
                             </button>
                           </td>
                         </tr>
