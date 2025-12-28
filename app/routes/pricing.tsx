@@ -9,6 +9,7 @@ import { Button } from "../components/ui/button";
 import { AlertTriangle, Check, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getContentUrl } from "../utils/config";
+import { useAuth } from "../contexts/auth-context";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -23,12 +24,19 @@ export default function Pricing() {
   const [showModal, setShowModal] = useState(true);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   // Handle plan selection and payment
   const handlePlanSelection = async (plan: any) => {
     if (plan.price === "0") {
-      // Free plan - redirect to signup
-      window.location.href = '/signup';
+      // Free plan - check if user is authenticated
+      if (isAuthenticated) {
+        // Already logged in, go to dashboard
+        window.location.href = '/dashboard';
+      } else {
+        // Not logged in, redirect to signup
+        window.location.href = '/signup';
+      }
       return;
     }
 
@@ -148,16 +156,19 @@ export default function Pricing() {
     const typeParam = urlParams.get('type');
     const expiredParam = urlParams.get('expired');
     
-    if (typeParam && (typeParam === 'school' || typeParam === 'college')) {
+    // If user is authenticated, skip modal and show pricing directly
+    if (isAuthenticated) {
+      const storedType = localStorage.getItem('selected_institution_type') || typeParam || 'school';
+      setSelectedType(storedType as 'school' | 'college');
+      setShowModal(false);
+    } else if (typeParam && (typeParam === 'school' || typeParam === 'college')) {
       setSelectedType(typeParam);
       setShowModal(false);
-      // Clear the stored type since we're now showing pricing
       localStorage.removeItem('selected_institution_type');
     }
     
     // If coming from expired subscription, skip modal and show pricing
     if (expiredParam === 'true') {
-      // Get user's institution type from stored data or default to school
       const userData = localStorage.getItem('user_data');
       const institutionType = localStorage.getItem('selected_institution_type') || 'school';
       setSelectedType(institutionType as 'school' | 'college');
@@ -174,14 +185,19 @@ export default function Pricing() {
       const scripts = document.querySelectorAll('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
       scripts.forEach(script => script.remove());
     };
-  }, []);
+  }, [isAuthenticated]);
 
   const handleTypeSelection = (type: 'school' | 'college') => {
     setSelectedType(type);
-    // Store selected type in localStorage for later use
     localStorage.setItem('selected_institution_type', type);
-    // Redirect to signup instead of showing pricing
-    window.location.href = '/signup';
+    
+    // If user is authenticated, show pricing directly
+    if (isAuthenticated) {
+      setShowModal(false);
+    } else {
+      // Redirect to signup for non-authenticated users with proper context
+      window.location.href = `/signup?mode=signup&source=pricing&type=${type}`;
+    }
   };
 
   const resetSelection = () => {
@@ -496,11 +512,11 @@ export default function Pricing() {
                             Processing...
                           </div>
                         ) : (
-                          plan.price === "0" ? "Start Free Trial" : "Choose Plan"
+                          plan.price === "0" ? (isAuthenticated ? "Go to Dashboard" : "Start Free Trial") : "Choose Plan"
                         )}
                       </Button>
                       <p id={`plan-${index}-action`} className="sr-only">
-                        {plan.price === "0" ? "Start your free trial" : `Select the ${plan.name} plan`}
+                        {plan.price === "0" ? (isAuthenticated ? "Go to your dashboard" : "Start your free trial") : `Select the ${plan.name} plan`}
                       </p>
                     </div>
                   </Card>

@@ -8,8 +8,8 @@ import { Card } from "../components/ui/card";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "About Seekio - Our Mission & Vision" },
-    { name: "description", content: "Learn about Seekio's mission to simplify digital transformation for businesses and academic institutions." },
+    { title: "About Seekio Campus Solutions® - Academic Management Platform" },
+    { name: "description", content: "Learn about Seekio Campus Solutions' mission to transform educational institutions with comprehensive academic management systems." },
   ];
 }
 
@@ -49,10 +49,10 @@ export default function About() {
             className="text-center mb-16"
           >
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              About <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Seekio</span>
+              About <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Seekio Campus Solutions®</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              We're on a mission to make digital transformation accessible, efficient, and impactful for every organization
+              We're on a mission to transform educational institutions with comprehensive academic management solutions
             </p>
           </motion.div>
         </div>
@@ -67,17 +67,19 @@ export default function About() {
             >
               <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">Who We Are</h2>
               <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">
-                Seekio is a digital transformation company specializing in web-based solutions, business digitization, 
-                and academic platform development. We bridge the gap between traditional operations and modern digital ecosystems.
+                Seekio Campus Solutions® is a specialized academic management platform designed for schools, colleges, 
+                and universities. We focus exclusively on transforming educational institutions through comprehensive 
+                digital solutions that streamline academic operations.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">
-                Founded by a team of experienced engineers and business strategists, we understand the challenges 
-                organizations face in today's rapidly evolving digital landscape. Our approach combines technical 
-                expertise with business acumen to deliver solutions that truly make a difference.
+                Founded by a team of experienced educators and technology experts, we understand the unique challenges 
+                that educational institutions face in managing students, faculty, and administrative processes. Our 
+                platform combines pedagogical expertise with cutting-edge technology.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-400">
-                From startups to established enterprises, from schools to universities, we've helped hundreds of 
-                organizations streamline their operations, enhance their digital presence, and unlock new growth opportunities.
+                From small schools to large universities, we've helped hundreds of educational institutions 
+                modernize their operations, improve student outcomes, and enhance the overall academic experience 
+                for all stakeholders.
               </p>
             </motion.div>
 
@@ -88,13 +90,14 @@ export default function About() {
             >
               <h3 className="text-3xl font-bold mb-6">Our Mission</h3>
               <p className="text-lg mb-8">
-                To simplify digital transformation by delivering innovative, scalable, and user-friendly solutions 
-                that empower businesses and academic institutions to thrive in the digital age.
+                To empower educational institutions with innovative academic management solutions that enhance 
+                learning outcomes, streamline administrative processes, and foster better communication between 
+                students, faculty, and parents.
               </p>
               <h3 className="text-3xl font-bold mb-6">Our Vision</h3>
               <p className="text-lg">
-                A world where every organization, regardless of size or industry, has access to seamless digital 
-                experiences that drive efficiency, growth, and meaningful impact.
+                A world where every educational institution has access to modern, efficient, and user-friendly 
+                academic management systems that support excellence in education and institutional growth.
               </p>
             </motion.div>
           </div>
@@ -148,40 +151,40 @@ export default function About() {
           >
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">What We Do</h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-12">
-              We specialize in three core areas that drive digital transformation
+              We specialize in comprehensive academic management solutions for educational institutions
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
               <Card hover>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Business Solutions</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Student Management</h3>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li>• Custom web applications</li>
-                  <li>• Process automation</li>
-                  <li>• Digital workflow optimization</li>
-                  <li>• Online presence building</li>
-                  <li>• Integration services</li>
+                  <li>• Student enrollment & records</li>
+                  <li>• Attendance tracking</li>
+                  <li>• Grade management</li>
+                  <li>• Parent communication</li>
+                  <li>• Progress reporting</li>
                 </ul>
               </Card>
 
               <Card hover>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Academic Platforms</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Faculty & Administration</h3>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">
                   <li>• Teacher management panels</li>
                   <li>• Class scheduling systems</li>
-                  <li>• Institute showcase websites</li>
-                  <li>• Online fee payment modules</li>
-                  <li>• Communication integrations</li>
+                  <li>• Curriculum planning</li>
+                  <li>• Resource allocation</li>
+                  <li>• Administrative dashboards</li>
                 </ul>
               </Card>
 
               <Card hover>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Rapid Application Development</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Financial & Communication</h3>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li>• Rapid app development</li>
-                  <li>• Cross-platform solutions</li>
-                  <li>• Admin dashboards</li>
-                  <li>• Cost-effective builds</li>
-                  <li>• Scalable architecture</li>
+                  <li>• Online fee payment systems</li>
+                  <li>• Financial reporting</li>
+                  <li>• SMS & email integration</li>
+                  <li>• WhatsApp notifications</li>
+                  <li>• Institute showcase websites</li>
                 </ul>
               </Card>
             </div>

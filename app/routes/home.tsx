@@ -9,8 +9,8 @@ import { FloatingContact } from "../components/ui/floating-contact";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Seekio - Digital Transformation Solutions" },
-    { name: "description", content: "Transform your business with cutting-edge digital solutions, automation, and rapid application development." },
+    { title: "Seekio Campus Solutions® - Academic Management Platform" },
+    { name: "description", content: "Transform your educational institution with comprehensive academic management solutions for schools, colleges, and universities." },
   ];
 }
 

@@ -18,10 +18,10 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <img src={ASSETS.logo} alt="Seekio" className="h-10 w-auto" />
+              <img src={ASSETS.logo} alt="Seekio Campus Solutions" className="h-10 w-auto" />
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
-              Transforming businesses and academic institutions through innovative digital solutions. We simplify complexity and deliver excellence.
+              Transforming educational institutions through comprehensive academic management solutions. We simplify school and college operations with innovative technology.
             </p>
             <div className="flex space-x-4">
               <a href={`mailto:${contactInfo.email}`} className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 hover:bg-blue-600 hover:text-white transition-colors">
@@ -44,18 +44,18 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Services</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Academic Solutions</h3>
             <ul className="space-y-2">
-              <li className="text-gray-600 dark:text-gray-400">Digital Solutions</li>
-              <li className="text-gray-600 dark:text-gray-400">Business Digitization</li>
-              <li className="text-gray-600 dark:text-gray-400">Academic Platforms</li>
-              <li className="text-gray-600 dark:text-gray-400">Rapid Application Development</li>
+              <li className="text-gray-600 dark:text-gray-400">Student Management</li>
+              <li className="text-gray-600 dark:text-gray-400">Faculty Administration</li>
+              <li className="text-gray-600 dark:text-gray-400">Fee Management</li>
+              <li className="text-gray-600 dark:text-gray-400">Communication Systems</li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-200 dark:border-gray-800 mt-8 pt-8 text-center text-gray-600 dark:text-gray-400">
-          <p>&copy; {new Date().getFullYear()} Seekio. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Seekio Campus Solutions®. All rights reserved.</p>
         </div>
       </div>
     </footer>

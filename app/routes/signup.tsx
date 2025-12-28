@@ -7,6 +7,7 @@ import { useState, useEffect, Suspense, lazy } from "react";
 import { Phone, MessageSquare, Shield, CheckCircle, Mail, Lock, Eye, EyeOff, UserPlus } from "lucide-react";
 import { getContentUrl } from "../utils/config";
 import { PageSkeleton } from "../components/ui/loading-skeleton";
+import { useAuth } from "../contexts/auth-context";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -28,12 +29,34 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{email?: string; mobile?: string; password?: string}>({});
   const [selectedInstitutionType, setSelectedInstitutionType] = useState<string | null>(null);
+  const { login } = useAuth();
 
-  // Check for selected institution type from pricing page
+  // Check for selected institution type from pricing page and URL parameters
   useEffect(() => {
     const institutionType = localStorage.getItem('selected_institution_type');
     if (institutionType) {
       setSelectedInstitutionType(institutionType);
+    }
+    
+    // Check URL parameters for default tab
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode'); // 'login' or 'signup'
+    const source = urlParams.get('source'); // 'dashboard', 'navbar', 'pricing', etc.
+    
+    // Set default tab based on source/mode
+    if (mode === 'login') {
+      setActiveTab('login');
+    } else if (mode === 'signup') {
+      setActiveTab('signup');
+    } else {
+      // Default behavior based on source
+      if (source === 'dashboard' || source === 'golive') {
+        setActiveTab('login'); // Dashboard users likely want to login
+      } else if (source === 'navbar' || source === 'getstarted' || source === 'pricing') {
+        setActiveTab('signup'); // New users likely want to signup
+      } else {
+        setActiveTab('initial'); // Show modal for unclear cases
+      }
     }
   }, []);
 
@@ -215,49 +238,48 @@ export default function Signup() {
       return;
     }
     
-    // Test credentials bypass
-    const testEmail = signupData?.testCredentials?.email;
-    const testPassword = signupData?.testCredentials?.password;
-    const testIsLive = signupData?.testCredentials?.isLive === "true";
-    
-    if (testEmail && testPassword && email === testEmail && password === testPassword) {
-      setLoading(true);
-      setTimeout(() => {
-        localStorage.setItem('auth_token', testIsLive ? 'live_token_123' : 'test_token_123');
-        localStorage.setItem('user_data', JSON.stringify({
-          id: 1, 
-          email: testEmail, 
-          name: 'Test User',
-          isLive: testIsLive,
-          subscription: signupData?.testCredentials?.subscription || {
-            level: 0,
-            planName: 'Free Trial',
-            startDate: new Date().toISOString(),
-            endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-          }
-        }));
-        // Redirect to pricing if came from pricing page, otherwise dashboard
-        const institutionType = localStorage.getItem('selected_institution_type');
-        if (institutionType) {
-          window.location.href = `/pricing?type=${institutionType}`;
-        } else {
-          window.location.href = '/dashboard';
-        }
-      }, 1000);
-      return;
-    }
-    
-    // Check if API endpoint exists before calling
-    if (!signupData?.api?.loginEndpoint) {
-      console.error('No login endpoint configured');
-      setErrors({email: 'Login service not configured'});
-      return;
-    }
-    
-
     setErrors({});
     setLoading(true);
+    
     try {
+      // Check if API endpoint exists
+      if (!signupData?.api?.loginEndpoint) {
+        // No API configured - use test credentials
+        const testEmail = signupData?.testCredentials?.email;
+        const testPassword = signupData?.testCredentials?.password;
+        const testIsLive = signupData?.testCredentials?.isLive === "true";
+        
+        if (testEmail && testPassword && email === testEmail && password === testPassword) {
+          setTimeout(() => {
+            const userData = {
+              id: 1, 
+              email: testEmail, 
+              name: signupData?.testCredentials?.name || 'Test User',
+              isLive: testIsLive,
+              subscription: signupData?.testCredentials?.subscription || {
+                level: 0,
+                planName: 'Free Trial',
+                startDate: new Date().toISOString(),
+                endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+              }
+            };
+            login(testIsLive ? 'live_token_123' : 'test_token_123', userData);
+            
+            const institutionType = localStorage.getItem('selected_institution_type');
+            if (institutionType) {
+              window.location.href = `/pricing?type=${institutionType}`;
+            } else {
+              window.location.href = '/dashboard';
+            }
+          }, 1000);
+          return;
+        } else {
+          setErrors({email: 'Invalid email or password'});
+          return;
+        }
+      }
+      
+      // Try API first
       const response = await fetch(signupData.api.loginEndpoint, {
         method: 'POST',
         headers: {
@@ -272,20 +294,87 @@ export default function Signup() {
       if (response.ok) {
         const data = await response.json();
         
-        // Store auth token and user data
-        if (data.token) {
-          localStorage.setItem('auth_token', data.token);
-          localStorage.setItem('user_data', JSON.stringify(data.user));
+        // Use actual user data from API response
+        if (data.token && data.user) {
+          login(data.token, {
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name || data.user.fullName || 'User',
+            subscription: data.user.subscription || {
+              level: 0,
+              planName: 'Free Trial',
+              startDate: new Date().toISOString(),
+              endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+            }
+          });
         }
         
-        window.location.href = '/dashboard';
+        const institutionType = localStorage.getItem('selected_institution_type');
+        if (institutionType) {
+          window.location.href = `/pricing?type=${institutionType}`;
+        } else {
+          window.location.href = '/dashboard';
+        }
       } else {
-        const errorData = await response.json();
-        setErrors({email: errorData.message || 'Invalid email or password'});
+        // API failed - try test credentials as fallback
+        const testEmail = signupData?.testCredentials?.email;
+        const testPassword = signupData?.testCredentials?.password;
+        
+        if (testEmail && testPassword && email === testEmail && password === testPassword) {
+          const userData = {
+            id: 1, 
+            email: testEmail, 
+            name: signupData?.testCredentials?.name || 'Test User',
+            subscription: signupData?.testCredentials?.subscription || {
+              level: 0,
+              planName: 'Free Trial',
+              startDate: new Date().toISOString(),
+              endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+            }
+          };
+          login('test_fallback_token', userData);
+          
+          const institutionType = localStorage.getItem('selected_institution_type');
+          if (institutionType) {
+            window.location.href = `/pricing?type=${institutionType}`;
+          } else {
+            window.location.href = '/dashboard';
+          }
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          setErrors({email: errorData.message || 'Invalid email or password'});
+        }
       }
     } catch (error) {
-      console.error('Error logging in:', error);
-      setErrors({email: 'Login failed. Please try again.'});
+      console.error('API Error:', error);
+      
+      // Network error - try test credentials as fallback
+      const testEmail = signupData?.testCredentials?.email;
+      const testPassword = signupData?.testCredentials?.password;
+      
+      if (testEmail && testPassword && email === testEmail && password === testPassword) {
+        const userData = {
+          id: 1, 
+          email: testEmail, 
+          name: signupData?.testCredentials?.name || 'Test User',
+          subscription: signupData?.testCredentials?.subscription || {
+            level: 0,
+            planName: 'Free Trial',
+            startDate: new Date().toISOString(),
+            endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+          }
+        };
+        login('test_network_fallback_token', userData);
+        
+        const institutionType = localStorage.getItem('selected_institution_type');
+        if (institutionType) {
+          window.location.href = `/pricing?type=${institutionType}`;
+        } else {
+          window.location.href = '/dashboard';
+        }
+      } else {
+        setErrors({email: 'Login failed. Please try again.'});
+      }
     } finally {
       setLoading(false);
     }
@@ -315,19 +404,19 @@ export default function Signup() {
       setLoading(true);
       setTimeout(() => {
         if (activeTab === 'login') {
-          localStorage.setItem('auth_token', 'test_token_otp_123');
-          localStorage.setItem('user_data', JSON.stringify({
+          const userData = {
             id: 1, 
             mobile: mobile || undefined,
             email: email || undefined,
-            name: 'Test User',
+            name: signupData?.testCredentials?.name || 'Test User',
             subscription: signupData?.testCredentials?.subscription || {
               level: 0,
               planName: 'Free Trial',
               startDate: new Date().toISOString(),
               endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
             }
-          }));
+          };
+          login('test_token_otp_123', userData);
           window.location.href = '/dashboard';
         } else {
           setStep('success');
@@ -361,8 +450,7 @@ export default function Signup() {
         
         // Store auth token if login
         if (activeTab === 'login' && data.token) {
-          localStorage.setItem('auth_token', data.token);
-          localStorage.setItem('user_data', JSON.stringify(data.user));
+          login(data.token, data.user);
         }
         
         setStep('success');
@@ -424,11 +512,6 @@ export default function Signup() {
                   </div>
                 </div>
               </div>
-            </div>} />
-                    <span>Quick & Easy Setup</span>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Right Side - Auth Options */}
@@ -443,10 +526,10 @@ export default function Signup() {
                 >
                   <div>
                     <h2 id="welcome-heading" className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                      {selectedInstitutionType ? `Welcome to ${selectedInstitutionType === 'school' ? 'School' : 'College'} Solutions!` : 'Welcome Back!'}
+                      {selectedInstitutionType ? `Welcome to ${selectedInstitutionType === 'school' ? 'School' : 'College'} Solutions!` : 'Welcome!'}
                     </h2>
                     <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">
-                      {selectedInstitutionType ? 'Sign in or create an account to view pricing' : 'Choose how you\'d like to continue'}
+                      Choose how you'd like to continue
                     </p>
                     {selectedInstitutionType && (
                       <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm">

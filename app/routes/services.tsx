@@ -10,8 +10,8 @@ import { Link } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Our Services - Seekio Digital Solutions" },
-    { name: "description", content: "Comprehensive digital transformation services including web development, business digitization, and rapid application development." },
+    { title: "Academic Management Services - Seekio Campus Solutions®" },
+    { name: "description", content: "Comprehensive academic management solutions for schools, colleges, and universities. Student management, faculty administration, and communication systems." },
   ];
 }
 
@@ -31,7 +31,7 @@ export default function Services() {
               Our <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Services</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              End-to-end digital solutions designed to transform your business operations and accelerate growth
+              Comprehensive academic management solutions designed to transform educational institutions and enhance learning outcomes
             </p>
           </motion.div>
         </div>
@@ -45,67 +45,67 @@ export default function Services() {
             className="mb-16"
           >
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
-              Digital Business Solutions
+              Student Management Solutions
             </h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Card hover>
-                <Globe size={40} className="text-blue-600 mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Website Creation</h3>
+                <GraduationCap size={40} className="text-blue-600 mb-4" />
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Student Enrollment & Records</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Professional, responsive websites that capture your brand essence and convert visitors into customers. 
-                  Built with modern frameworks for optimal performance and SEO.
+                  Comprehensive student information system that manages enrollment, academic records, and personal data 
+                  with secure access controls and easy data retrieval.
                 </p>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li>• Corporate websites</li>
-                  <li>• E-commerce platforms</li>
-                  <li>• Landing pages</li>
-                  <li>• Portfolio sites</li>
-                </ul>
-              </Card>
-
-              <Card hover>
-                <Zap size={40} className="text-blue-600 mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Process Automation</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Eliminate repetitive tasks and streamline workflows with intelligent automation solutions. 
-                  Increase efficiency and reduce operational costs.
-                </p>
-                <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li>• Workflow automation</li>
-                  <li>• Data processing</li>
-                  <li>• Report generation</li>
-                  <li>• Task scheduling</li>
-                </ul>
-              </Card>
-
-              <Card hover>
-                <Smartphone size={40} className="text-blue-600 mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Online Presence Optimization</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Build and enhance your digital footprint across multiple channels. From SEO to social media integration, 
-                  we help you reach your target audience effectively.
-                </p>
-                <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li>• SEO optimization</li>
-                  <li>• Social media integration</li>
-                  <li>• Analytics setup</li>
-                  <li>• Content management</li>
+                  <li>• Online enrollment forms</li>
+                  <li>• Academic transcripts</li>
+                  <li>• Document management</li>
+                  <li>• Student profiles</li>
                 </ul>
               </Card>
 
               <Card hover>
                 <BarChart size={40} className="text-blue-600 mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Business Workflow Tools</h3>
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Attendance Tracking</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Custom tools and dashboards tailored to your specific business needs. Manage operations, 
-                  track metrics, and make data-driven decisions.
+                  Automated attendance management with real-time tracking, parent notifications, and comprehensive 
+                  reporting for better student engagement monitoring.
                 </p>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li>• Admin dashboards</li>
-                  <li>• CRM systems</li>
-                  <li>• Inventory management</li>
-                  <li>• Project tracking</li>
+                  <li>• Digital attendance marking</li>
+                  <li>• Absence notifications</li>
+                  <li>• Attendance reports</li>
+                  <li>• Parent alerts</li>
+                </ul>
+              </Card>
+
+              <Card hover>
+                <Shield size={40} className="text-blue-600 mb-4" />
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Grade Management</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Streamlined grading system with customizable grade scales, progress tracking, and automated 
+                  report card generation for efficient academic assessment.
+                </p>
+                <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                  <li>• Online gradebooks</li>
+                  <li>• Progress tracking</li>
+                  <li>• Report card generation</li>
+                  <li>• Grade analytics</li>
+                </ul>
+              </Card>
+
+              <Card hover>
+                <MessageSquare size={40} className="text-blue-600 mb-4" />
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Parent Communication</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Integrated communication platform that keeps parents informed about their child's academic progress, 
+                  school events, and important announcements.
+                </p>
+                <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                  <li>• Parent portals</li>
+                  <li>• Progress notifications</li>
+                  <li>• Event updates</li>
+                  <li>• Direct messaging</li>
                 </ul>
               </Card>
             </div>
@@ -120,7 +120,7 @@ export default function Services() {
             animate={{ opacity: 1, y: 0 }}
           >
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
-              Academic Digitization Platform
+              Faculty & Administrative Solutions
             </h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -220,52 +220,67 @@ export default function Services() {
             animate={{ opacity: 1, y: 0 }}
           >
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
-              Rapid Application Development
+              Financial & Communication Systems
             </h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Card hover>
-                <Smartphone size={40} className="text-blue-600 mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Cross-Platform Apps</h3>
+                <Shield size={40} className="text-blue-600 mb-4" />
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Online Fee Payment System</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Build once, deploy everywhere. Create applications that work seamlessly across web, iOS, and Android 
-                  with responsive design and native-like performance.
+                  Secure, user-friendly payment gateway integrated with your academic system for seamless fee collection 
+                  and automated financial management.
                 </p>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li>• Web applications</li>
-                  <li>• Mobile apps</li>
-                  <li>• Progressive web apps</li>
-                  <li>• Responsive design</li>
+                  <li>• Multiple payment methods</li>
+                  <li>• Automated receipts</li>
+                  <li>• Payment tracking</li>
+                  <li>• Financial reporting</li>
                 </ul>
               </Card>
 
               <Card hover>
                 <BarChart size={40} className="text-blue-600 mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Lightweight Admin Dashboards</h3>
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Financial Reporting</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Intuitive dashboards that give you complete control over your data and operations without the complexity 
-                  of traditional enterprise software.
+                  Comprehensive financial analytics and reporting tools that provide insights into fee collection, 
+                  outstanding payments, and institutional revenue streams.
                 </p>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li>• Data visualization</li>
-                  <li>• User management</li>
-                  <li>• Real-time analytics</li>
-                  <li>• Custom reports</li>
+                  <li>• Revenue analytics</li>
+                  <li>• Outstanding reports</li>
+                  <li>• Payment trends</li>
+                  <li>• Custom dashboards</li>
                 </ul>
               </Card>
 
               <Card hover>
-                <Zap size={40} className="text-blue-600 mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Fast, Affordable, Scalable</h3>
+                <MessageSquare size={40} className="text-blue-600 mb-4" />
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">SMS & Email Integration</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Get to market faster with lower development costs while maintaining the flexibility to scale as your 
-                  business grows. Perfect for startups and SMEs.
+                  Automated communication systems that keep students, parents, and staff informed through SMS and email 
+                  notifications for important updates and announcements.
                 </p>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li>• 3-5x faster development</li>
-                  <li>• 50-70% cost reduction</li>
-                  <li>• Easy maintenance</li>
-                  <li>• Scalable architecture</li>
+                  <li>• Automated notifications</li>
+                  <li>• Bulk messaging</li>
+                  <li>• Event reminders</li>
+                  <li>• Grade updates</li>
+                </ul>
+              </Card>
+
+              <Card hover>
+                <Globe size={40} className="text-blue-600 mb-4" />
+                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">WhatsApp Integration</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Direct WhatsApp integration for instant communication with parents and students, including automated 
+                  messages for fee reminders, attendance alerts, and emergency notifications.
+                </p>
+                <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                  <li>• Instant messaging</li>
+                  <li>• Fee reminders</li>
+                  <li>• Emergency alerts</li>
+                  <li>• Group communications</li>
                 </ul>
               </Card>
             </div>
@@ -283,7 +298,7 @@ export default function Services() {
               Ready to Get Started?
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              Let's discuss which services are right for your organization
+              Let's discuss how we can transform your educational institution
             </p>
             <Link to="/contact">
               <Button variant="secondary" size="lg">
