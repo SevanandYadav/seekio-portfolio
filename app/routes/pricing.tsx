@@ -77,6 +77,9 @@ export default function Pricing() {
       }
       
       // Initialize Razorpay
+      const userData = localStorage.getItem('user_data');
+      const user = userData ? JSON.parse(userData) : null;
+      
       const options = {
         key: keyData.key,
         amount: orderData.amount,
@@ -119,14 +122,14 @@ export default function Pricing() {
               throw new Error(verifyData.error || 'Payment verification failed');
             }
           } catch (error) {
-            console.error('Payment verification error:', error);
+            console.error('Payment verification error:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
             alert('Payment verification failed. Please contact support.');
           }
         },
         prefill: {
-          name: 'User Name',
-          email: 'user@example.com',
-          contact: '9999999999'
+          name: user?.name || '',
+          email: user?.email || '',
+          contact: user?.mobile || ''
         },
         theme: {
           color: '#3B82F6'
@@ -137,7 +140,7 @@ export default function Pricing() {
       rzp.open();
       
     } catch (error) {
-      console.error('Payment initiation error:', error);
+      console.error('Payment initiation error:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
       alert('Failed to initiate payment. Please try again.');
     } finally {
       setPaymentLoading(false);
@@ -178,7 +181,7 @@ export default function Pricing() {
     fetch(getContentUrl('/pricing.json'))
       .then(res => res.json())
       .then(data => setPricingData(data))
-      .catch(error => console.error('Failed to load pricing data:', error));
+      .catch(error => console.error('Failed to load pricing data:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error'));
       
     return () => {
       // Cleanup script on unmount
@@ -190,14 +193,7 @@ export default function Pricing() {
   const handleTypeSelection = (type: 'school' | 'college') => {
     setSelectedType(type);
     localStorage.setItem('selected_institution_type', type);
-    
-    // If user is authenticated, show pricing directly
-    if (isAuthenticated) {
-      setShowModal(false);
-    } else {
-      // Redirect to signup for non-authenticated users with proper context
-      window.location.href = `/signup?mode=signup&source=pricing&type=${type}`;
-    }
+    setShowModal(false);
   };
 
   const resetSelection = () => {

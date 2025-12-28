@@ -30,6 +30,7 @@ export default function Onboarding() {
   const [emailEditable, setEmailEditable] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
+    phone: "",
     instituteType: "",
     sessionCycle: "",
     instituteName: "",
@@ -54,7 +55,7 @@ export default function Onboarding() {
           setFormData(prev => ({ ...prev, instituteEmail: user.email }));
         }
       } catch (error) {
-        console.error('Failed to parse user data:', error);
+        console.error('Failed to parse user data:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
       }
     }
   }, []);
@@ -71,7 +72,7 @@ export default function Onboarding() {
 
   const handlePayment = async (plan) => {
     try {
-      console.log('Starting payment for plan:', plan);
+      console.log('Starting payment for plan:', plan?.name?.replace(/[\r\n]/g, '') || 'Unknown plan');
       
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
@@ -102,7 +103,7 @@ export default function Onboarding() {
       }
 
       const orderData = await response.json();
-      console.log('Order data:', orderData);
+      console.log('Order data:', JSON.stringify(orderData).replace(/[\r\n]/g, ''));
       
       if (!orderData.success) {
         throw new Error(orderData.error || 'Failed to create order');
@@ -138,14 +139,14 @@ export default function Onboarding() {
               alert('Payment verification failed');
             }
           } catch (error) {
-            console.error('Payment verification error:', error);
+            console.error('Payment verification error:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
             alert('Payment verification failed');
           }
         },
         prefill: {
           name: formData.name,
           email: formData.instituteEmail,
-          contact: '9999999999'
+          contact: formData.phone || ''
         },
         theme: { color: '#2563eb' },
         modal: {
@@ -159,7 +160,7 @@ export default function Onboarding() {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('Payment error:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
       alert(`Payment failed: ${error.message}. Please try again.`);
     }
   };
@@ -271,6 +272,13 @@ export default function Onboarding() {
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 placeholder="Enter your full name"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <input
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                placeholder="Enter your phone number (optional)"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>

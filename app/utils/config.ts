@@ -44,7 +44,7 @@ export const getContactInfo = async () => {
     };
     return contactInfoCache;
   } catch (error) {
-    console.warn('Failed to load contact info:', error);
+    // Failed to load contact info
     return {
       email: 'contact@seekio.com',
       phone: '+1 (234) 567-890',

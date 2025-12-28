@@ -165,7 +165,7 @@ export default function Signup() {
       // For signup, always use email
       if (activeTab === 'signup') {
         const otpCode = Math.floor(100000 + Math.random() * 900000);
-        console.log('Sending OTP to:', email, 'OTP:', otpCode);
+        console.log('Sending OTP to:', email.replace(/[\r\n]/g, ''), 'OTP:', otpCode);
         
         const response = await fetch('/.netlify/functions/send-email', {
           method: 'POST',
@@ -185,7 +185,7 @@ export default function Signup() {
         
         console.log('Email API response status:', response.status);
         const responseData = await response.json();
-        console.log('Email API response:', responseData);
+        console.log('Email API response:', JSON.stringify(responseData).replace(/[\r\n]/g, ''));
         
         if (response.ok) {
           // Store OTP for verification
@@ -216,7 +216,7 @@ export default function Signup() {
         }
       }
     } catch (error) {
-      console.error('Error sending OTP:', error);
+      console.error('Error sending OTP:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
       setStep('otp');
     } finally {
       setLoading(false);
@@ -346,7 +346,7 @@ export default function Signup() {
         }
       }
     } catch (error) {
-      console.error('API Error:', error);
+      console.error('API Error:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
       
       // Network error - try test credentials as fallback
       const testEmail = signupData?.testCredentials?.email;
@@ -459,7 +459,7 @@ export default function Signup() {
         setErrors({email: errorData.message || 'Invalid OTP. Please try again.'});
       }
     } catch (error) {
-      console.error('Error verifying OTP:', error);
+      console.error('Error verifying OTP:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
       setErrors({email: 'Verification failed. Please try again.'});
     } finally {
       setLoading(false);

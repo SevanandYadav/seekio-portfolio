@@ -5,12 +5,11 @@ import { useState, memo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../contexts/auth-context";
 
-const links = [
+const baseLinks = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
   { name: "Services", path: "/services" },
   { name: "Portfolio", path: "/portfolio" },
-  { name: "Pricing", path: "/pricing" },
   { name: "Contact", path: "/contact" }
 ];
 
@@ -19,6 +18,10 @@ export const Navbar = memo(() => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, user, logout } = useAuth();
+  
+  const links = isAuthenticated 
+    ? [...baseLinks, { name: "Pricing", path: "/pricing" }]
+    : [...baseLinks, { name: "Pricing", path: "/signup?mode=signup&source=pricing" }];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

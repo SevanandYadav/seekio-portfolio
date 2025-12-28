@@ -35,7 +35,7 @@ export default function Contact() {
       })
       .then(data => setContactData(data))
       .catch(error => {
-        console.error('Contact page error:', error);
+        console.error('Contact page error:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
         // Set minimal fallback to prevent crash
         setContactData({
           heading: "Get in Touch",

@@ -27,7 +27,7 @@ export function TestModeModal({ isOpen, onClose, data }: TestModeModalProps) {
         };
         localStorage.setItem('live_profile', JSON.stringify(liveProfile));
       } catch (e) {
-        console.warn('Failed to create live profile');
+        // Failed to create live profile
       }
     }
     

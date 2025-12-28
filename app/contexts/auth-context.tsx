@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(parsedUser);
         setIsAuthenticated(true);
       } catch (error) {
-        console.error('Failed to parse user data:', error);
+        console.error('Failed to parse user data:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
         logout();
       }
     }

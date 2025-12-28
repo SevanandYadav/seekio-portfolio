@@ -21,7 +21,13 @@ export function PaymentIntegration() {
     });
   };
 
+  const getUserData = () => {
+    const userData = localStorage.getItem('user_data');
+    return userData ? JSON.parse(userData) : null;
+  };
+
   const createOrder = async (amount, planDetails) => {
+    const user = getUserData();
     try {
       const response = await fetch('/.netlify/functions/create-order', {
         method: 'POST',
@@ -31,7 +37,7 @@ export function PaymentIntegration() {
           receipt: `receipt_${Date.now()}`,
           notes: {
             plan: planDetails.name,
-            user_email: 'user@example.com' // Get from user context
+            user_email: user?.email || ''
           }
         })
       });
@@ -42,19 +48,20 @@ export function PaymentIntegration() {
 
       return await response.json();
     } catch (error) {
-      console.error('Create order error:', error);
+      console.error('Create order error:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
       throw error;
     }
   };
 
   const verifyPayment = async (paymentData, planDetails) => {
+    const user = getUserData();
     try {
       const response = await fetch('/.netlify/functions/verify-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...paymentData,
-          user_email: 'user@example.com', // Get from user context
+          user_email: user?.email || '',
           plan_details: planDetails
         })
       });
@@ -65,7 +72,7 @@ export function PaymentIntegration() {
 
       return await response.json();
     } catch (error) {
-      console.error('Payment verification error:', error);
+      console.error('Payment verification error:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
       throw error;
     }
   };
@@ -73,6 +80,7 @@ export function PaymentIntegration() {
   const handlePayment = async () => {
     setLoading(true);
     setPaymentStatus(null);
+    const user = getUserData();
 
     try {
       // Load Razorpay script
@@ -121,9 +129,9 @@ export function PaymentIntegration() {
           }
         },
         prefill: {
-          name: 'User Name', // Get from user context
-          email: 'user@example.com', // Get from user context
-          contact: '9999999999' // Get from user context
+          name: user?.name || '',
+          email: user?.email || '',
+          contact: user?.mobile || ''
         },
         notes: {
           plan: planDetails.name
@@ -146,7 +154,7 @@ export function PaymentIntegration() {
       razorpay.open();
 
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('Payment error:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
       setPaymentStatus({
         type: 'error',
         message: error.message || 'Payment failed. Please try again.'

@@ -33,7 +33,7 @@ export function Setup({ data }: SetupProps) {
   const handleEditClass = (index: number) => {
     if (isLiveMode) {
       // Allow editing in live mode
-      console.log('Edit class:', index);
+      // Edit class at index: ${index}
     } else {
       setShowTestModeModal(true);
     }

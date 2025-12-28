@@ -93,7 +93,7 @@ export default function Dashboard() {
           loadTestModeData();
         })
         .catch(error => {
-          console.error('Failed to fetch fresh credentials:', error);
+          console.error('Failed to fetch fresh credentials:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
           // Fallback to cached data
           const isLiveMode = user.isLive;
           if (isLiveMode) {
@@ -141,7 +141,7 @@ export default function Dashboard() {
         sessionStorage.setItem('dashboard-data', JSON.stringify(data));
       })
       .catch(error => {
-        console.error('Failed to load dashboard data:', error);
+        console.error('Failed to load dashboard data:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
         console.log('Make sure dashboard.json exists in your data branch content folder');
       })
       .finally(() => {
