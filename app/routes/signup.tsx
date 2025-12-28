@@ -22,12 +22,14 @@ export default function Signup() {
   const [loginMethod, setLoginMethod] = useState<'password' | 'otp'>('password');
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<'contact' | 'otp' | 'success'>('contact');
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{email?: string; mobile?: string; password?: string}>({});
+  const [errors, setErrors] = useState<{email?: string; mobile?: string; password?: string; fullName?: string; role?: string}>({});
   const [selectedInstitutionType, setSelectedInstitutionType] = useState<string | null>(null);
   const { login } = useAuth();
 
@@ -75,6 +77,8 @@ export default function Signup() {
     setActiveTab(tab);
     setMobile("");
     setEmail("");
+    setFullName("");
+    setRole("");
     setPassword("");
     setOtp("");
     setStep('contact');
@@ -124,12 +128,21 @@ export default function Signup() {
     }
     
     const contact = contactMethod === 'mobile' ? mobile : email;
-    const newErrors: {mobile?: string; email?: string} = {};
+    const newErrors: {mobile?: string; email?: string; fullName?: string; role?: string} = {};
     
     if (contactMethod === 'mobile' && activeTab === 'signup') {
       newErrors.mobile = 'Phone signup not supported. Please use email.';
       setErrors(newErrors);
       return;
+    }
+    
+    if (activeTab === 'signup') {
+      if (!fullName) {
+        newErrors.fullName = 'Please enter your full name';
+      }
+      if (!role) {
+        newErrors.role = 'Please select your role';
+      }
     }
     
     if (contactMethod === 'mobile') {
@@ -152,7 +165,7 @@ export default function Signup() {
         (contactMethod === 'email' && email === signupData?.testCredentials?.email)) {
       setLoading(true);
       setTimeout(() => {
-        setStep('otp');
+        setStep('success');
         setLoading(false);
       }, 1000);
       return;
@@ -162,12 +175,12 @@ export default function Signup() {
     setLoading(true);
     
     try {
-      // For signup, always use email
+      // For signup, create user with backend API
       if (activeTab === 'signup') {
-        const otpCode = Math.floor(100000 + Math.random() * 900000);
-        console.log('Sending OTP to:', email.replace(/[\r\n]/g, ''), 'OTP:', otpCode);
+        const password = Math.random().toString(36).slice(-8);
         
-        const response = await fetch('/.netlify/functions/send-email', {
+        // First send password via email
+        const emailResponse = await fetch('/.netlify/functions/send-email', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -176,23 +189,36 @@ export default function Signup() {
             name: 'Seekio Campus Signup',
             email: email,
             company: 'Seekio Campus',
-            service: 'signup-otp',
-            message: `Your OTP for Seekio Campus signup is: ${otpCode}`,
-            isOTP: true,
-            otpCode: otpCode
+            service: 'signup-credentials',
+            message: `Welcome to Seekio Campus! Your login credentials:\nEmail: ${email}\nPassword: ${password}`,
+            isCredentials: true,
+            credentials: { email: email, password: password }
           })
         });
         
-        console.log('Email API response status:', response.status);
-        const responseData = await response.json();
-        console.log('Email API response:', JSON.stringify(responseData).replace(/[\r\n]/g, ''));
-        
-        if (response.ok) {
-          // Store OTP for verification
-          sessionStorage.setItem('signup_otp', otpCode.toString());
-          setStep('otp');
+        if (emailResponse.ok) {
+          // Then call backend API to create user
+          const response = await fetch('/.netlify/functions/register-user', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: fullName,
+              email: email,
+              password: password,
+              role: role.toUpperCase()
+            })
+          });
+          
+          if (response.ok) {
+            setStep('success');
+          } else {
+            const errorData = await response.json();
+            setErrors({email: errorData.message || 'Failed to create account. Please try again.'});
+          }
         } else {
-          setErrors({email: `Failed to send OTP: ${responseData.message || 'Please try again'}`});
+          setErrors({email: 'Failed to send credentials email. Please try again.'});
         }
       } else {
         // Login flow - use existing logic
@@ -217,7 +243,11 @@ export default function Signup() {
       }
     } catch (error) {
       console.error('Error sending OTP:', error instanceof Error ? error.message.replace(/[\r\n]/g, '') : 'Unknown error');
-      setStep('otp');
+      if (activeTab === 'signup') {
+        setErrors({email: 'Failed to create account. Please try again.'});
+      } else {
+        setStep('otp');
+      }
     } finally {
       setLoading(false);
     }
@@ -596,101 +626,117 @@ export default function Signup() {
                       </button>
                     </div>
 
-                    {/* Method Selector */}
-                    <div className="flex bg-gray-50 dark:bg-gray-800 rounded-lg p-1 mb-4" role="tablist" aria-label="Contact method selection">
-                      <button
-                        onClick={() => setContactMethod('email')}
-                        role="tab"
-                        aria-selected={contactMethod === 'email'}
-                        aria-controls="contact-form"
-                        className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          contactMethod === 'email'
-                            ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                            : 'text-gray-600 dark:text-gray-400'
-                        }`}
-                      >
-                        <span aria-hidden="true">✉️</span> Email
-                      </button>
-                      <button
-                        disabled
-                        role="tab"
-                        aria-selected="false"
-                        className="flex-1 py-2 px-3 rounded-md text-sm font-medium text-gray-400 cursor-not-allowed"
-                        aria-describedby="phone-disabled-reason"
-                      >
-                        <span aria-hidden="true">📱</span> Phone (Not Supported)
-                      </button>
-                    </div>
-                    <p id="phone-disabled-reason" className="sr-only">Phone number signup is currently not supported</p>
-
-                    {contactMethod === 'mobile' && (
-                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 mb-4" role="alert">
-                        <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                          Phone number signup is not supported. Please use email to create your account.
-                        </p>
-                      </div>
-                    )}
-
                     <div id="contact-form">
-                      <label htmlFor="contact-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Email Address *
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Mail className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                      <div className="space-y-4">
+                        <div>
+                          <label htmlFor="fullname-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Full Name *
+                          </label>
+                          <input
+                            id="fullname-input"
+                            type="text"
+                            value={fullName}
+                            onChange={(e) => {
+                              setFullName(e.target.value);
+                              if (errors.fullName) setErrors({...errors, fullName: undefined});
+                            }}
+                            placeholder="Enter your full name"
+                            required
+                            aria-invalid={errors.fullName ? 'true' : 'false'}
+                            className={`block w-full px-3 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ${
+                              errors.fullName ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
+                            }`}
+                          />
+                          {errors.fullName && (
+                            <p className="text-xs text-red-600 dark:text-red-400 mt-1" role="alert">
+                              {errors.fullName}
+                            </p>
+                          )}
                         </div>
-                        <input
-                          id="contact-input"
-                          type="email"
-                          value={email}
-                          onChange={(e) => {
-                            setEmail(e.target.value);
-                            if (errors.email) setErrors({...errors, email: undefined});
-                          }}
-                          placeholder="Enter your email address"
-                          required
-                          aria-invalid={errors.email ? 'true' : 'false'}
-                          aria-describedby={errors.email ? 'email-error' : 'email-help'}
-                          className={`block w-full pl-10 pr-3 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ${
-                            errors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
-                          }`}
-                        />
+
+                        <div>
+                          <label htmlFor="role-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Role *
+                          </label>
+                          <select
+                            id="role-select"
+                            value={role}
+                            onChange={(e) => {
+                              setRole(e.target.value);
+                              if (errors.role) setErrors({...errors, role: undefined});
+                            }}
+                            required
+                            aria-invalid={errors.role ? 'true' : 'false'}
+                            className={`block w-full px-3 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
+                              errors.role ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
+                            }`}
+                          >
+                            <option value="">Select your role</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="student">Student</option>
+                            <option value="parent">Parent</option>
+                          </select>
+                          {errors.role && (
+                            <p className="text-xs text-red-600 dark:text-red-400 mt-1" role="alert">
+                              {errors.role}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label htmlFor="contact-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Email Address *
+                          </label>
+                          <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <Mail className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                            </div>
+                            <input
+                              id="contact-input"
+                              type="email"
+                              value={email}
+                              onChange={(e) => {
+                                setEmail(e.target.value);
+                                if (errors.email) setErrors({...errors, email: undefined});
+                              }}
+                              placeholder="Enter your email address"
+                              required
+                              aria-invalid={errors.email ? 'true' : 'false'}
+                              className={`block w-full pl-10 pr-3 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ${
+                                errors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-gray-600'
+                              }`}
+                            />
+                          </div>
+                          {errors.email && (
+                            <p className="text-xs text-red-600 dark:text-red-400 mt-1" role="alert">
+                              {errors.email}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      {errors.email && (
-                        <p id="email-error" className="text-xs text-red-600 dark:text-red-400 mt-1" role="alert">
-                          {errors.email}
-                        </p>
-                      )}
-                      <p id="email-help" className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        We'll send a verification code to this email address
-                      </p>
                     </div>
 
                     <Button
                       onClick={handleSendOTP}
-                      disabled={!email || !validateEmail(email) || loading}
+                      disabled={!email || !fullName || !role || !validateEmail(email) || loading}
                       className="w-full py-3 text-sm font-semibold focus:ring-4 focus:ring-blue-300"
-                      aria-describedby="send-otp-status"
                     >
                       {loading ? (
                         <div className="flex items-center justify-center">
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" aria-hidden="true"></div>
-                          <span>Sending verification code...</span>
+                          <span>Creating account...</span>
                         </div>
                       ) : (
                         <>
-                          <MessageSquare className="mr-2" size={16} aria-hidden="true" />
-                          Send Verification Code
+                          <UserPlus className="mr-2" size={16} aria-hidden="true" />
+                          Create Account
                         </>
                       )}
                     </Button>
-                    <p id="send-otp-status" className="sr-only">
-                      {loading ? 'Sending verification code' : 'Ready to send verification code'}
-                    </p>
 
                     <div className="text-center">
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        By continuing, you agree to our Terms of Service and Privacy Policy
+                        Your password will be sent to your email address
                       </p>
                     </div>
                   </motion.div>
@@ -790,10 +836,10 @@ export default function Signup() {
                     
                     <div>
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                        {signupData.signup.steps.success.title}
+                        Account Created Successfully!
                       </h2>
                       <p className="text-gray-600 dark:text-gray-400 text-sm">
-                        {signupData.signup.steps.success.subtitle}
+                        Your login credentials have been sent to your email address. Check your inbox to get started.
                       </p>
                     </div>
 
